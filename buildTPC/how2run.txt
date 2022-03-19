@@ -1,0 +1,4 @@
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /work/hallc/shms/wmhenry/medical/buildTPC
+cmake -DGeant4_DIR=/site/12gev_phys/2.4/Linux_CentOS7.9.2009-gcc9.2.0/geant4/4.10.06.p02 ../TPC/
