@@ -57,10 +57,10 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* DC)
   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
   G4String particleName;
   G4ParticleDefinition* particle
-                    = particleTable->FindParticle(particleName="e-");
+                    = particleTable->FindParticle(particleName="proton");
   fParticleGun->SetParticleDefinition(particle);
   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(1.,0.,0.));
-  fParticleGun->SetParticleEnergy(500.*MeV);
+  fParticleGun->SetParticleEnergy(45.*MeV);
   G4double position = -0.5*(fDetector->GetWorldSizeX());
   fParticleGun->SetParticlePosition(G4ThreeVector(position,0.*cm,0.*cm));
 

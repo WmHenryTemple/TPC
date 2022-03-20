@@ -10,7 +10,7 @@
 
 # p+ 75MeV 
 /gun/particle proton
-/gun/energy 25 MeV
+/gun/energy 30 MeV
 #/run/beamOn 1000
 
 # Test commands defined in this example
@@ -24,5 +24,5 @@
 #/det/setSizeZ 20. cm
 #/det/setNbOfLayers 50
 #
-/run/beamOn 1000
+/run/beamOn 10000
 

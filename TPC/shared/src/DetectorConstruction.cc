@@ -35,6 +35,8 @@
 
 #include "DetectorConstruction.hh"
 #include "DetectorMessenger.hh"
+#include "F02ElectricFieldSetup.hh"
+#include "G4FieldManager.hh"
 
 #include "G4Material.hh"
 #include "G4NistManager.hh"
@@ -65,7 +67,7 @@ DetectorConstruction::DetectorConstruction()
  fSolidLayer(0),fLogicLayer(0),fPhysiLayer(0),
  fSolidAbsorber(0),fLogicAbsorber(0),fPhysiAbsorber(0),
  fSolidGap (0),fLogicGap (0),fPhysiGap (0),
- fDetectorMessenger(0)
+  fDetectorMessenger(0), fEmFieldSetup (0)
 {
   // default parameter values of the calorimeter
   fAbsorberThickness = 0.3*mm;
@@ -83,12 +85,16 @@ DetectorConstruction::DetectorConstruction()
 
   // create commands for interactive definition of the calorimeter
   fDetectorMessenger = new DetectorMessenger(this);
+
+
+  fEmFieldSetup = new F02ElectricFieldSetup() ;
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DetectorConstruction::~DetectorConstruction()
-{ delete fDetectorMessenger;}
+{ delete fDetectorMessenger;  delete fEmFieldSetup;}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OO0oo........oooOO0OOooo......
 

@@ -23,63 +23,25 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
+/// \file runAndEvent/RE01/include/RE01TrackingAction.hh
+/// \brief Definition of the RE01TrackingAction class
 //
-/// \file ActionInitialization.cc
-/// \brief Implementation of the ActionInitialization class
+//
 
-#include "ActionInitialization.hh"
-#include "HistoManager.hh"
-#include "PrimaryGeneratorAction.hh"
-#include "RunAction.hh"
-#include "EventAction.hh"
-#include "SteppingAction.hh"
-//#include "RE01TrackingAction.hh"
+#ifndef RE01TrackingAction_h
+#define RE01TrackingAction_h 1
 
+#include "G4UserTrackingAction.hh"
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-ActionInitialization::ActionInitialization(DetectorConstruction* detector)
- : G4VUserActionInitialization(),
-   fDetector(detector)
-{}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-ActionInitialization::~ActionInitialization()
-{}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void ActionInitialization::BuildForMaster() const
+class RE01TrackingAction : public G4UserTrackingAction 
 {
-  // Histo manager
-  HistoManager*  histo = new HistoManager();
+public:
+  RE01TrackingAction();
+  virtual ~RE01TrackingAction(){};
+   
+  virtual void PreUserTrackingAction(const G4Track*);
+  virtual void PostUserTrackingAction(const G4Track*);
   
-  // Actions
-  SetUserAction(new RunAction(histo));
-}
+};
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void ActionInitialization::Build() const
-{
-  // Histo manager
-  HistoManager*  histo = new HistoManager();
-  
-  // Actions
-  //
-  SetUserAction(new PrimaryGeneratorAction(fDetector));
-  
-  RunAction* runAction = new RunAction(histo);  
-  SetUserAction(runAction);
-  
-  EventAction* eventAction = new EventAction(runAction, histo);
-  SetUserAction(eventAction);
-
-  SteppingAction* steppingAction = new SteppingAction(fDetector, eventAction);
-  SetUserAction(steppingAction);
-
-  //  SetUserAction(new RE01TrackingAction);
-}  
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+#endif

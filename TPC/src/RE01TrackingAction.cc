@@ -23,63 +23,50 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
+/// \file runAndEvent/RE01/src/RE01TrackingAction.cc
+/// \brief Implementation of the RE01TrackingAction class
 //
-/// \file ActionInitialization.cc
-/// \brief Implementation of the ActionInitialization class
+//
 
-#include "ActionInitialization.hh"
-#include "HistoManager.hh"
-#include "PrimaryGeneratorAction.hh"
-#include "RunAction.hh"
-#include "EventAction.hh"
-#include "SteppingAction.hh"
-//#include "RE01TrackingAction.hh"
+#include "RE01TrackingAction.hh"
+//#include "RE01Trajectory.hh"
+//#include "RE01TrackInformation.hh"
 
+#include "G4TrackingManager.hh"
+#include "G4Track.hh"
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo...... 
+RE01TrackingAction::RE01TrackingAction()
+:G4UserTrackingAction()
+{;}
 
-ActionInitialization::ActionInitialization(DetectorConstruction* detector)
- : G4VUserActionInitialization(),
-   fDetector(detector)
-{}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-ActionInitialization::~ActionInitialization()
-{}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void ActionInitialization::BuildForMaster() const
+void RE01TrackingAction::PreUserTrackingAction(const G4Track* aTrack)
 {
-  // Histo manager
-  HistoManager*  histo = new HistoManager();
-  
-  // Actions
-  SetUserAction(new RunAction(histo));
+  // Create trajectory only for track in tracking region
+  //  G4int fOriginalTrackID = aTrack->GetTrackID();
+  //G4ParticleDefinition *fParticleDefinition = aTrack->GetDefinition();
+  //  G4ThreeVector fOriginalPosition = aTrack->GetPosition(); 
+  //  G4ThreeVector fOriginalMomentum = aTrack->GetMomentum(); 
+  //  G4double fOriginalEnergy = aTrack->GetTotalEnergy(); 
+  //  G4double fOriginalTime = aTrack->GetGlobalTime();
+  fpTrackingManager->SetStoreTrajectory(true);
+
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void ActionInitialization::Build() const
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo...... 
+void RE01TrackingAction::PostUserTrackingAction(const G4Track* aTrack)
 {
-  // Histo manager
-  HistoManager*  histo = new HistoManager();
-  
-  // Actions
-  //
-  SetUserAction(new PrimaryGeneratorAction(fDetector));
-  
-  RunAction* runAction = new RunAction(histo);  
-  SetUserAction(runAction);
-  
-  EventAction* eventAction = new EventAction(runAction, histo);
-  SetUserAction(eventAction);
 
-  SteppingAction* steppingAction = new SteppingAction(fDetector, eventAction);
-  SetUserAction(steppingAction);
+  // Create trajectory only for track in tracking region
+  //  G4int fOriginalTrackID = aTrack->GetTrackID();
+  //  G4ParticleDefinition *fParticleDefinition = aTrack->GetDefinition();
+  //  G4ThreeVector fOriginalPosition = aTrack->GetPosition(); 
+  //  G4ThreeVector fOriginalMomentum = aTrack->GetMomentum(); 
+  //  G4double fOriginalEnergy = aTrack->GetTotalEnergy(); 
+  //  G4double fOriginalTime = aTrack->GetGlobalTime();
 
-  //  SetUserAction(new RE01TrackingAction);
-}  
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+}
+
+

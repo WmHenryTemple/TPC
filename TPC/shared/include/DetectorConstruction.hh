@@ -45,6 +45,7 @@ class G4LogicalVolume;
 class G4VPhysicalVolume;
 class G4Material;
 class DetectorMessenger;
+class F02ElectricFieldSetup;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -94,7 +95,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
      const G4VPhysicalVolume* GetGap()        {return fPhysiGap;};
                  
   private:
-
+   
      G4Material*        fAbsorberMaterial;
      G4double           fAbsorberThickness;
      
@@ -134,6 +135,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
      G4VPhysicalVolume* fPhysiGap;      //pointer to the physical Gap
      
      DetectorMessenger* fDetectorMessenger;  //pointer to the Messenger
+     F02ElectricFieldSetup* fEmFieldSetup;
       
   private:
     
