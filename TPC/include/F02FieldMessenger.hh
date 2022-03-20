@@ -23,72 +23,47 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-/// \file EventAction.cc
-/// \brief Implementation of the EventAction class
+/// \file field/field02/include/F02FieldMessenger.hh
+/// \brief Definition of the F02FieldMessenger class
 //
 //
 //
-// 
-
+//
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#include "EventAction.hh"
+#ifndef F02FieldMessenger_h
+#define F02FieldMessenger_h 1
 
-#include "RunAction.hh"
-#include "HistoManager.hh"
+#include "G4UImessenger.hh"
 
-#include "G4Event.hh"
+class F02ElectricFieldSetup;
+class G4UIdirectory;
+class G4UIcmdWithAnInteger;
+class G4UIcmdWithADoubleAndUnit;
+class G4UIcmdWith3VectorAndUnit;
+class G4UIcmdWithoutParameter;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-EventAction::EventAction(RunAction* run, HistoManager* histo)
-:G4UserEventAction(),
- fRunAct(run),fHistoManager(histo),
- fEnergyAbs(0.), fEnergyGap(0.),
- fTrackLAbs(0.), fTrackLGap(0.),
- fPrintModulo(0)                             
+class F02FieldMessenger: public G4UImessenger
 {
- fPrintModulo = 100; }
+  public:
+    F02FieldMessenger(F02ElectricFieldSetup* );
+    virtual ~F02FieldMessenger();
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-EventAction::~EventAction()
-{ }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void EventAction::BeginOfEventAction(const G4Event* evt)
-{  
-  G4int evtNb = evt->GetEventID();
-  if (evtNb%fPrintModulo == 0) 
-    G4cout << "\n---> Begin of event: " << evtNb << G4endl;
+    virtual void SetNewValue(G4UIcommand*, G4String);
  
- // initialisation per event
- fEnergyAbs = fEnergyGap = 0.;
- fTrackLAbs = fTrackLGap = 0.;
- for(int i=0;i<50;i++)fGapE[i]=0;
-}
+  private:
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+    F02ElectricFieldSetup*     fElFieldSetup;
 
-void EventAction::EndOfEventAction(const G4Event*)
-{
-  //accumulates statistic
-  //
-  fRunAct->FillPerEvent(fEnergyAbs, fEnergyGap, fTrackLAbs, fTrackLGap);
-  
-  //fill histograms
-  //
-  fHistoManager->FillHisto(0, fEnergyAbs);
-  fHistoManager->FillHisto(1, fEnergyGap);
-  fHistoManager->FillHisto(2, fTrackLAbs);
-  fHistoManager->FillHisto(3, fTrackLGap);
-  for(int i=0; i<50; i++)fHistoManager->FillHisto(4, i, fGapE[i]);
-    //    G4cout << "fHistoManager->FillHisto(4, i, fGapE[i]); " << i <<"  " << fGapE[i]<<G4endl;
-  //fill ntuple
-  //
-  fHistoManager->FillNtuple(fEnergyAbs, fEnergyGap, fTrackLAbs, fTrackLGap);
-}  
+    G4UIdirectory*             fFieldDir;
+    G4UIcmdWithAnInteger*      fStepperCmd;
+    G4UIcmdWithADoubleAndUnit* fElFieldZCmd;
+    G4UIcmdWith3VectorAndUnit* fElFieldCmd;
+    G4UIcmdWithADoubleAndUnit* fMinStepCmd;
+    G4UIcmdWithoutParameter*   fUpdateCmd;
+};
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+#endif

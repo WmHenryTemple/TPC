@@ -23,8 +23,8 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-/// \file EventAction.cc
-/// \brief Implementation of the EventAction class
+/// \file EventAction.hh
+/// \brief Definition of the EventAction class
 //
 //
 //
@@ -33,62 +33,39 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#include "EventAction.hh"
+#ifndef EventAction_h
+#define EventAction_h 1
 
-#include "RunAction.hh"
-#include "HistoManager.hh"
+#include "G4UserEventAction.hh"
+#include "globals.hh"
 
-#include "G4Event.hh"
+class RunAction;
+class HistoManager;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-EventAction::EventAction(RunAction* run, HistoManager* histo)
-:G4UserEventAction(),
- fRunAct(run),fHistoManager(histo),
- fEnergyAbs(0.), fEnergyGap(0.),
- fTrackLAbs(0.), fTrackLGap(0.),
- fPrintModulo(0)                             
+class EventAction : public G4UserEventAction
 {
- fPrintModulo = 100; }
+public:
+  EventAction(RunAction*, HistoManager*);
+  virtual ~EventAction();
+
+  virtual void  BeginOfEventAction(const G4Event*);
+  virtual void    EndOfEventAction(const G4Event*);
+    
+  ;
+private:
+   RunAction*    fRunAct;
+   HistoManager* fHistoManager;
+   G4double fGapE[50];   
+   G4double  fEnergyAbs, fEnergyGap;
+   G4double  fTrackLAbs, fTrackLGap;
+                     
+   G4int     fPrintModulo;                             
+};
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-EventAction::~EventAction()
-{ }
+#endif
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void EventAction::BeginOfEventAction(const G4Event* evt)
-{  
-  G4int evtNb = evt->GetEventID();
-  if (evtNb%fPrintModulo == 0) 
-    G4cout << "\n---> Begin of event: " << evtNb << G4endl;
- 
- // initialisation per event
- fEnergyAbs = fEnergyGap = 0.;
- fTrackLAbs = fTrackLGap = 0.;
- for(int i=0;i<50;i++)fGapE[i]=0;
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void EventAction::EndOfEventAction(const G4Event*)
-{
-  //accumulates statistic
-  //
-  fRunAct->FillPerEvent(fEnergyAbs, fEnergyGap, fTrackLAbs, fTrackLGap);
-  
-  //fill histograms
-  //
-  fHistoManager->FillHisto(0, fEnergyAbs);
-  fHistoManager->FillHisto(1, fEnergyGap);
-  fHistoManager->FillHisto(2, fTrackLAbs);
-  fHistoManager->FillHisto(3, fTrackLGap);
-  for(int i=0; i<50; i++)fHistoManager->FillHisto(4, i, fGapE[i]);
-    //    G4cout << "fHistoManager->FillHisto(4, i, fGapE[i]); " << i <<"  " << fGapE[i]<<G4endl;
-  //fill ntuple
-  //
-  fHistoManager->FillNtuple(fEnergyAbs, fEnergyGap, fTrackLAbs, fTrackLGap);
-}  
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+    

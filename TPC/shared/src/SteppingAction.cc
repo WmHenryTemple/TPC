@@ -59,16 +59,30 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
   // get volume of the current step
   G4VPhysicalVolume* volume 
   = aStep->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
-  
+
+  //  G4Touchable* touch = aStep->GetPreStepPoint()->GetTouchableHandle()->GetReplicaNumber();;
+
+  G4int copyNum=0;
+  if (volume == fDetector->GetGap()){
+  copyNum = aStep->GetPreStepPoint()->GetTouchable()->GetReplicaNumber(1);
+  //  G4cout << "Copy Number" << copyNum << G4endl;
+  //  G4cout <<"Name:" << volume->GetName() << G4endl<<G4endl;
+  }
   // collect energy and track length step by step
   G4double edep = aStep->GetTotalEnergyDeposit();
-  
   G4double stepl = 0.;
+
   if (aStep->GetTrack()->GetDefinition()->GetPDGCharge() != 0.)
     stepl = aStep->GetStepLength();
-      
-  if (volume == fDetector->GetAbsorber()) fEventAction->AddAbs(edep,stepl);
-  if (volume == fDetector->GetGap())      fEventAction->AddGap(edep,stepl);
+  
+  if (volume == fDetector->GetAbsorber()){
+    fEventAction->AddAbs(edep,stepl);
+  }
+
+  if (volume == fDetector->GetGap()){
+    fEventAction->AddGap(edep,stepl);
+    fEventAction->gapEnergy(edep, copyNum);
+  }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

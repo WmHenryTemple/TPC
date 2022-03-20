@@ -78,13 +78,15 @@ void HistoManager::Book()
   }
   
   // id = 0
-  fHisto[0] = new TH1D("EAbs", "Edep in absorber (MeV)", 100, 20., 35*CLHEP::MeV);
+  fHisto[0] = new TH1D("EAbs", "Edep in absorber (MeV)", 100, 20., 60*CLHEP::MeV);
   // id = 1
   fHisto[1] = new TH1D("EGap", "Edep in gap (MeV)", 100, 0., 5*CLHEP::MeV);
   // id = 2
-  fHisto[2] = new TH1D("LAbs", "trackL in absorber (mm)", 100, 0., 15*CLHEP::mm);
+  fHisto[2] = new TH1D("LAbs", "trackL in absorber (mm)", 100, 0., 20*CLHEP::mm);
   // id = 3
   fHisto[3] = new TH1D("LGap", "trackL in gap (mm)", 100, 0., 60*CLHEP::cm);
+
+  fHisto[4] = new TH1D("dedx", "Energy Deposited ", 60, -0.5, 59.5);
 
   for ( G4int i=0; i<kMaxHisto; ++i ) {
     if (! fHisto[i]) G4cout << "\n can't create histo " << i << G4endl;
@@ -130,6 +132,7 @@ void HistoManager::FillHisto(G4int ih, G4double xbin, G4double weight)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+
 void HistoManager::Normalize(G4int ih, G4double fac)
 {
   if (ih >= kMaxHisto) {
@@ -159,7 +162,7 @@ void HistoManager::FillNtuple(G4double energyAbs, G4double energyGap,
 void HistoManager::PrintStatistic()
 {
   G4cout << "\n ----> print histograms statistic \n" << G4endl;
-  for ( G4int i=0; i<kMaxHisto; ++i ) {
+  for ( G4int i=0; i<kMaxHisto-1; ++i ) {
     TH1D* h1 = fHisto[i];
     const G4String name = h1->GetName();  
 

@@ -39,6 +39,7 @@
 #include "G4VUserDetectorConstruction.hh"
 #include "globals.hh"
 
+
 class G4Box;
 class G4LogicalVolume;
 class G4VPhysicalVolume;
@@ -93,7 +94,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
      const G4VPhysicalVolume* GetGap()        {return fPhysiGap;};
                  
   private:
-     
+
      G4Material*        fAbsorberMaterial;
      G4double           fAbsorberThickness;
      
