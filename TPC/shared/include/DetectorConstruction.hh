@@ -77,32 +77,41 @@ class DetectorConstruction : public G4VUserDetectorConstruction
      G4double GetWorldSizeX()           {return fWorldSizeX;}; 
      G4double GetWorldSizeZ()          {return fWorldSizeZ;};
      G4double GetWorldSizeY()          {return fWorldSizeY;};
+
+     G4double GetStripSizeX()           {return fStripSizeX;}; 
+     G4double GetStripSizeZ()          {return fStripSizeZ;};
+     G4double GetStripSizeY()          {return fStripSizeY;};
      
      G4double GetCalorThickness()       {return fCalorThickness;}; 
      G4double GetCalorSizeY()          {return fCalorSizeY;};
      G4double GetCalorSizeZ()          {return fCalorSizeZ;};
       
      G4int GetNbOfLayers()              {return fNbOfLayers;}; 
+     G4int GetNbOfStrips()              {return fNbOfStrips;}; 
      
      G4Material* GetAbsorberMaterial()  {return fAbsorberMaterial;};
      G4double    GetAbsorberThickness() {return fAbsorberThickness;};      
      
      G4Material* GetGapMaterial()       {return fGapMaterial;};
      G4double    GetGapThickness()      {return fGapThickness;};
-     
+
      const G4VPhysicalVolume* GetphysiWorld() {return fPhysiWorld;};           
      const G4VPhysicalVolume* GetAbsorber()   {return fPhysiAbsorber;};
      const G4VPhysicalVolume* GetGap()        {return fPhysiGap;};
+     const G4VPhysicalVolume* GetStrip()        {return fPhysiStrip;};
                  
   private:
    
      G4Material*        fAbsorberMaterial;
      G4double           fAbsorberThickness;
-     
+
+     G4Material*        fCopperMaterial;     
      G4Material*        fGapMaterial;
      G4double           fGapThickness;
+     G4double           fStripSpacing;
      
      G4int              fNbOfLayers;
+     G4int              fNbOfStrips;
      G4double           fLayerThickness;
           
      G4double           fCalorSizeZ;
@@ -113,6 +122,27 @@ class DetectorConstruction : public G4VUserDetectorConstruction
      G4double           fWorldSizeZ;
      G4double           fWorldSizeY;
      G4double           fWorldSizeX;
+
+     G4double           fStripSizeZ;
+     G4double           fStripSizeY;
+     G4double           fStripSizeX;
+
+     G4double           fCopperSizeZ;
+     G4double           fCopperSizeY;
+     G4double           fCopperSizeX;
+
+     G4double           fGapSizeZ;
+     G4double           fGapSizeY;
+     G4double           fGapSizeX;
+
+     G4double           fCuGapSizeZ;
+     G4double           fCuGapSizeY;
+     G4double           fCuGapSizeX;
+
+     G4double           fPcbSizeZ;
+     G4double           fPcbSizeY;
+     G4double           fPcbSizeX;
+
             
      G4Box*             fSolidWorld;    //pointer to the solid World 
      G4LogicalVolume*   fLogicWorld;    //pointer to the logical World
@@ -130,9 +160,26 @@ class DetectorConstruction : public G4VUserDetectorConstruction
      G4LogicalVolume*   fLogicAbsorber; //pointer to the logical Absorber
      G4VPhysicalVolume* fPhysiAbsorber; //pointer to the physical Absorber
      
+
+     G4Box*             fSolidStrip;      //pointer to the solid Strip
+     G4LogicalVolume*   fLogicStrip;      //pointer to the logical Strip
+     G4VPhysicalVolume* fPhysiStrip;      //pointer to the physical Strip
+
      G4Box*             fSolidGap;      //pointer to the solid Gap
      G4LogicalVolume*   fLogicGap;      //pointer to the logical Gap
      G4VPhysicalVolume* fPhysiGap;      //pointer to the physical Gap
+
+     G4Box*             fSolidCuGap;      //pointer to the solid CuGap
+     G4LogicalVolume*   fLogicCuGap;      //pointer to the logical CuGap
+     G4VPhysicalVolume* fPhysiCuGap;      //pointer to the physical CuGap
+
+     G4Box*             fSolidCopper;      //pointer to the solid Copper
+     G4LogicalVolume*   fLogicCopper;      //pointer to the logical Copper
+     G4VPhysicalVolume* fPhysiCopper;      //pointer to the physical Copper
+
+     G4Box*             fSolidPcb;      //pointer to the solid PCB
+     G4LogicalVolume*   fLogicPcb;      //pointer to the logical PCB
+     G4VPhysicalVolume* fPhysiPcb;      //pointer to the physical PCB
      
      DetectorMessenger* fDetectorMessenger;  //pointer to the Messenger
      F02ElectricFieldSetup* fEmFieldSetup;
@@ -152,9 +199,27 @@ inline void DetectorConstruction::ComputeCalorParameters()
      fLayerThickness = fAbsorberThickness + fGapThickness;
      fCalorThickness = fNbOfLayers*fLayerThickness;
      
-     fWorldSizeX = 1.2*fCalorThickness; 
-     fWorldSizeY = 1.2*fCalorSizeY;
-     fWorldSizeZ = 1.2*fCalorSizeZ;
+     fWorldSizeX = 10.2*fCalorThickness; 
+     fWorldSizeY = 10.2*fCalorSizeY;
+     fWorldSizeZ = 10.2*fCalorSizeZ;
+
+     //input copper and gap width and thickness
+     //  fNbOfStrips        = 150;
+     fPcbSizeX=fNbOfStrips*(fCopperSizeX+fCuGapSizeX);
+     fPcbSizeY=fCopperSizeY;
+     fPcbSizeZ=fCalorSizeZ;
+
+     fStripSizeX=(fCopperSizeX+fCuGapSizeX);
+     fStripSizeY=fCopperSizeY;
+     fStripSizeZ=fCalorSizeZ;
+
+     //  fCuGapSizeX          = 0.1mm;
+     fCuGapSizeY=fCopperSizeY;
+     fCuGapSizeZ=fCalorSizeZ;
+
+     //  fCopperSizeX        = 3.*mm;
+     //  fCopperSizeY       = 0.25*mm;
+     fCopperSizeZ=fCalorSizeZ;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

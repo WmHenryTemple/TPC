@@ -75,6 +75,12 @@ DetectorConstruction::DetectorConstruction()
   fNbOfLayers        = 50;
   fCalorSizeY       = 8.*cm;
   fCalorSizeZ       = 20.*cm;
+
+  fNbOfStrips        = 166;
+  fCopperSizeX        = 3.*mm;
+  fCopperSizeY       = 0.25*mm;
+  fCuGapSizeX          = 0.1*mm;
+
   ComputeCalorParameters();
 
   DefineMaterials();
@@ -114,6 +120,7 @@ fDefaultMaterial = man->FindOrBuildMaterial("G4_Galactic");
 man->FindOrBuildMaterial("G4_Pb");
 man->FindOrBuildMaterial("G4_lAr");
 man->FindOrBuildMaterial("G4_MYLAR");
+ fCopperMaterial=man->FindOrBuildMaterial("G4_Cu");
  G4double density, fractionmass; 
  G4String name;
  G4int ncomponents;
@@ -195,7 +202,7 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
       fLogicLayer = new G4LogicalVolume(fSolidLayer,        //its solid
                                        fDefaultMaterial,    //its material
                                        "Layer");            //its name
-
+      //      fNbOfLayers=1;
       if (fNbOfLayers > 1){                                      
         fPhysiLayer = new G4PVReplica("Layer",              //its name
                                      fLogicLayer,           //its logical volume
@@ -252,9 +259,11 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
                                         
     }
   
+
   //                                 
   // Gap
   //
+  fSolidGap=0; fLogicGap=0; fPhysiGap=0; 
   fSolidGap=0; fLogicGap=0; fPhysiGap=0; 
   
   if (fGapThickness > 0.)
@@ -273,17 +282,45 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
                                    false,                   //no boulean operat
                                    0);                      //copy number
     }
-    
+
+     G4double spacing=fCopperSizeX + fCuGapSizeX;
+     G4double value = -(fCalorSizeY/2+fPcbSizeY/2);
+
+     fSolidPcb = new G4Box("Pcb",fPcbSizeX/2,fPcbSizeY/2,fPcbSizeZ/2);
+     fLogicPcb = new G4LogicalVolume(fSolidPcb,fDefaultMaterial,"Pcb");
+     fPhysiPcb = new G4PVPlacement(0,G4ThreeVector(0,value,0.),fLogicPcb,"Pcb",fLogicWorld,false,0);
+
+     fSolidStrip = new G4Box("Strip",fStripSizeX/2,fStripSizeY/2,fStripSizeZ/2);
+     fLogicStrip = new G4LogicalVolume(fSolidStrip,fDefaultMaterial,"Strip");
+     fPhysiStrip = new G4PVReplica("Strip",fLogicStrip,fLogicPcb,kXAxis,fNbOfStrips,spacing);       
+
+     fSolidCopper = new G4Box("Copper",fCopperSizeX/2,fCopperSizeY/2,fCopperSizeZ/2);
+     fLogicCopper = new G4LogicalVolume(fSolidCopper,fDefaultMaterial,"Copper");
+     fPhysiCopper = new G4PVPlacement(0, G4ThreeVector( (fCopperSizeX-fStripSizeX)/2 , 0. , 0.),fLogicCopper,"Copper",fLogicStrip,false,0);
+
+     fSolidCuGap = new G4Box("CuGap",fCuGapSizeX/2,fCuGapSizeY/2,fCuGapSizeZ/2);
+     fLogicCuGap = new G4LogicalVolume(fSolidCuGap,fDefaultMaterial,"CuGap");
+     fPhysiCuGap = new G4PVPlacement(0, G4ThreeVector( -(fCuGapSizeX-fStripSizeX)/2 , 0. , 0.),fLogicCuGap,"CuGap",fLogicStrip,false,0);
+
+
   PrintCalorParameters();     
-  
   //                                        
   // Visualization attributes
   //
-  fLogicWorld->SetVisAttributes (G4VisAttributes::GetInvisible());
+     fLogicWorld->SetVisAttributes (G4VisAttributes::GetInvisible());
+     fLogicCalor->SetVisAttributes (G4VisAttributes::GetInvisible());
+     fLogicLayer->SetVisAttributes (G4VisAttributes::GetInvisible());
+     fLogicCuGap->SetVisAttributes (G4VisAttributes::GetInvisible());
+     fLogicStrip->SetVisAttributes (G4VisAttributes::GetInvisible());
+     fLogicGap->SetVisAttributes (G4VisAttributes::GetInvisible());
+     fLogicPcb->SetVisAttributes (G4VisAttributes::GetInvisible());
+     G4VisAttributes* simpleBoxVisAtt= new G4VisAttributes(G4Colour(1.0,0.0,1.0));
+     simpleBoxVisAtt->SetVisibility(true);
+     fLogicAbsorber->SetVisAttributes(simpleBoxVisAtt);
 
-  G4VisAttributes* simpleBoxVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,1.0));
-  simpleBoxVisAtt->SetVisibility(true);
-  fLogicCalor->SetVisAttributes(simpleBoxVisAtt);
+     G4VisAttributes* simpleStripVisAtt= new G4VisAttributes(G4Colour(0.0,1.0,0.0));
+     simpleStripVisAtt->SetVisibility(true);
+     fLogicCopper->SetVisAttributes(simpleStripVisAtt);
 
   //
   //always return the physical World
