@@ -88,6 +88,8 @@ void HistoManager::Book()
 
   fHisto[4] = new TH1D("dedx", "Energy Deposited ", 60, -0.5, 59.5);
 
+  fHisto[5] = new TH1D("dedxZ", "Energy Deposited ", 166, -257.3, 257.3)
+;
   for ( G4int i=0; i<kMaxHisto; ++i ) {
     if (! fHisto[i]) G4cout << "\n can't create histo " << i << G4endl;
   }  
@@ -162,7 +164,7 @@ void HistoManager::FillNtuple(G4double energyAbs, G4double energyGap,
 void HistoManager::PrintStatistic()
 {
   G4cout << "\n ----> print histograms statistic \n" << G4endl;
-  for ( G4int i=0; i<kMaxHisto-1; ++i ) {
+  for ( G4int i=0; i<kMaxHisto-2; ++i ) {
     TH1D* h1 = fHisto[i];
     const G4String name = h1->GetName();  
 

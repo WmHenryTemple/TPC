@@ -36,15 +36,14 @@
 
 #include "DetectorConstruction.hh"
 #include "EventAction.hh"
-
+#include "HistoManager.hh"
 #include "G4Step.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-SteppingAction::SteppingAction(DetectorConstruction* det,
-                                         EventAction* evt)
+SteppingAction::SteppingAction(DetectorConstruction* det,EventAction* evt, HistoManager* histo)                                         
 : G4UserSteppingAction(), 
-  fDetector(det), fEventAction(evt)                                         
+  fDetector(det), fEventAction(evt), fHistoManager(histo)                                         
 { }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -59,7 +58,15 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
   // get volume of the current step
   G4VPhysicalVolume* volume 
   = aStep->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
+  G4StepPoint* prePoint = aStep->GetPreStepPoint();
+  G4StepPoint* postPoint = aStep->GetPostStepPoint();
+  G4ThreeVector preZvec=prePoint->GetPosition();
+  G4ThreeVector postZvec=postPoint->GetPosition();
 
+  G4double preZ=preZvec.getX();
+  G4double postZ=preZvec.getX();
+
+  //  G4cout << preZ <<"\t" << postZ << G4endl;
   //  G4Touchable* touch = aStep->GetPreStepPoint()->GetTouchableHandle()->GetReplicaNumber();;
 
   G4int copyNum=0;
@@ -80,6 +87,8 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
   }
 
   if (volume == fDetector->GetGap()){
+    fHistoManager->FillHisto(5, preZ, edep);    
+  //ePerStrip(postz,edep);
     fEventAction->AddGap(edep,stepl);
     fEventAction->gapEnergy(edep, copyNum);
   }

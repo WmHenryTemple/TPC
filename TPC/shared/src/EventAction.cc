@@ -77,7 +77,6 @@ void EventAction::EndOfEventAction(const G4Event*)
   //accumulates statistic
   //
   fRunAct->FillPerEvent(fEnergyAbs, fEnergyGap, fTrackLAbs, fTrackLGap);
-  
   //fill histograms
   //
   fHistoManager->FillHisto(0, fEnergyAbs);

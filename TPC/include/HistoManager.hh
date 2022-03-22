@@ -41,7 +41,7 @@ class TFile;
 class TTree;
 class TH1D;
 
-const G4int kMaxHisto = 5;
+const G4int kMaxHisto = 6;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

@@ -34,8 +34,8 @@
 
 #include "G4RunManager.hh"
 #include "G4UImanager.hh"
-#include "FTFP_BERT.hh"
-
+//#include "FTFP_BERT.hh"
+#include "G4HumanPhantomPhysicsList.hh"
 #include "DetectorConstruction.hh"
 #include "PrimaryGeneratorAction.hh"
 #include "RunAction.hh"
@@ -66,8 +66,8 @@ int main(int argc,char** argv)
   DetectorConstruction* detector = new DetectorConstruction;
   runManager->SetUserInitialization(detector);
   //
-  runManager->SetUserInitialization(new FTFP_BERT);
- 
+//  runManager->SetUserInitialization(new FTFP_BERT);
+  runManager->SetUserInitialization(new G4HumanPhantomPhysicsList); 
   // set an HistoManager
   //
   HistoManager*  histo = new HistoManager();
@@ -85,7 +85,7 @@ int main(int argc,char** argv)
   runManager->SetUserAction(event_action);
   //
   SteppingAction* stepping_action =
-                    new SteppingAction(detector, event_action);
+    new SteppingAction(detector, event_action, histo);
   runManager->SetUserAction(stepping_action);
   
   // Initialize G4 kernel

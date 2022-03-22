@@ -23,49 +23,35 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-/// \file EventAction.hh
-/// \brief Definition of the EventAction class
 //
 //
-//
-// 
+// Previous authors: G. Guerrieri, S. Guatelli and M. G. Pia, INFN Genova, Italy
+// Authors (since 2007): S. Guatelli,University of Wollongong, Australia
+// Contributions by F. Ambroglini INFN Perugia, Italy
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+#ifndef G4HumanPhantomPhysicsList_h
+#define G4HumanPhantomPhysicsList_h 1
 
-#ifndef EventAction_h
-#define EventAction_h 1
-
-#include "G4UserEventAction.hh"
+#include "G4VModularPhysicsList.hh"
 #include "globals.hh"
 
-class RunAction;
-class HistoManager;
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-class EventAction : public G4UserEventAction
+class G4HumanPhantomPhysicsList: public G4VModularPhysicsList
 {
 public:
-  EventAction(RunAction*, HistoManager*);
-  virtual ~EventAction();
+  G4HumanPhantomPhysicsList();
+  ~G4HumanPhantomPhysicsList();
 
-  virtual void  BeginOfEventAction(const G4Event*);
-  virtual void    EndOfEventAction(const G4Event*);
-    
-  ;
+protected:
+  // Construct particle and physics
+  void ConstructParticle();
+  void ConstructProcess();
+  void SetCuts();
+
 private:
-   RunAction*    fRunAct;
-   HistoManager* fHistoManager;
-   G4double fGapE[50];   
-   G4double  fEnergyAbs, fEnergyGap;
-   G4double  fTrackLAbs, fTrackLGap;
-                     
-   G4int     fPrintModulo;                             
+  G4VPhysicsConstructor* emPhysicsList;
+  G4VPhysicsConstructor* decPhysicsList;
 };
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 #endif
 
-    
+
+
