@@ -86,10 +86,23 @@ void HistoManager::Book()
   // id = 3
   fHisto[3] = new TH1D("LGap", "trackL in gap (mm)", 100, 0., 60*CLHEP::cm);
 
-  fHisto[4] = new TH1D("dedx", "Energy Deposited ", 60, -0.5, 59.5);
+  fHisto[4] = new TH1D("dedx", "Energy Deposited vs Chamber # ", 60, -0.5, 59.5);
 
-  fHisto[5] = new TH1D("dedxZ", "Energy Deposited ", 166, -257.3, 257.3)
-;
+  //  fHisto[5] = new TH1D("dedxZ", "Energy Deposited ", 166, -257.3, 257.3)
+  fHisto[5] = new TH1D("evPre", "# steps vs chamber pre-step position ", 1000, -.1, 12);
+  fHisto[6] = new TH1D("dePre", "Energy deposited vs chamber pre-step position ", 1000, -.1, 12);
+  fHisto[7] = new TH1D("evPost", "# steps vs chamber post-step position ", 1000, -.1, 12);
+  fHisto[8] = new TH1D("dePost", "Energy deposited vs chamber post-step position ", 1000, -.1, 12);
+
+  fHisto[9] = new TH1D("evPreZ", "# steps vs pre-step Z position ", 1000, 300, -300);
+  fHisto[10] = new TH1D("dePreZ", "Energy deposited vs pre-step Z position ", 1000, 300, -300);
+  fHisto[11] = new TH1D("evPostZ", "# steps vs post-step Z position ", 1000, 300, -300);
+  fHisto[12] = new TH1D("dePostZ", "Energy deposited vs post-step Z position ", 1000, 300, -300);
+
+  fHisto[13] = new TH1D("deStrip", "Energy deposited vs Strip number  ", 1000, 300, -300);
+
+  
+
   for ( G4int i=0; i<kMaxHisto; ++i ) {
     if (! fHisto[i]) G4cout << "\n can't create histo " << i << G4endl;
   }  
@@ -164,7 +177,7 @@ void HistoManager::FillNtuple(G4double energyAbs, G4double energyGap,
 void HistoManager::PrintStatistic()
 {
   G4cout << "\n ----> print histograms statistic \n" << G4endl;
-  for ( G4int i=0; i<kMaxHisto-2; ++i ) {
+  for ( G4int i=0; i<4; ++i ) {
     TH1D* h1 = fHisto[i];
     const G4String name = h1->GetName();  
 

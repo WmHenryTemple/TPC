@@ -1,3 +1,4 @@
+
 //
 // ********************************************************************
 // * License and Disclaimer                                           *
@@ -39,6 +40,11 @@
 #include "HistoManager.hh"
 #include "G4Step.hh"
 
+#include "G4SystemOfUnits.hh"
+#include "G4SteppingManager.hh"
+#include "G4VTouchable.hh"
+#include "G4VPhysicalVolume.hh"
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 SteppingAction::SteppingAction(DetectorConstruction* det,EventAction* evt, HistoManager* histo)                                         
@@ -58,26 +64,24 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
   // get volume of the current step
   G4VPhysicalVolume* volume 
   = aStep->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
+
+  G4VPhysicalVolume* volume2 
+  = aStep->GetPostStepPoint()->GetTouchableHandle()->GetVolume();
+
+  G4double edep = aStep->GetTotalEnergyDeposit();
+  G4double stepl = 0.;
+
   G4StepPoint* prePoint = aStep->GetPreStepPoint();
   G4StepPoint* postPoint = aStep->GetPostStepPoint();
+
   G4ThreeVector preZvec=prePoint->GetPosition();
   G4ThreeVector postZvec=postPoint->GetPosition();
 
   G4double preZ=preZvec.getX();
-  G4double postZ=preZvec.getX();
-
-  //  G4cout << preZ <<"\t" << postZ << G4endl;
-  //  G4Touchable* touch = aStep->GetPreStepPoint()->GetTouchableHandle()->GetReplicaNumber();;
+  G4double postZ=postZvec.getX();
 
   G4int copyNum=0;
-  if (volume == fDetector->GetGap()){
-  copyNum = aStep->GetPreStepPoint()->GetTouchable()->GetReplicaNumber(1);
-  //  G4cout << "Copy Number" << copyNum << G4endl;
-  //  G4cout <<"Name:" << volume->GetName() << G4endl<<G4endl;
-  }
-  // collect energy and track length step by step
-  G4double edep = aStep->GetTotalEnergyDeposit();
-  G4double stepl = 0.;
+  G4int parentID = aStep->GetTrack()->GetParentID();
 
   if (aStep->GetTrack()->GetDefinition()->GetPDGCharge() != 0.)
     stepl = aStep->GetStepLength();
@@ -85,13 +89,109 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
   if (volume == fDetector->GetAbsorber()){
     fEventAction->AddAbs(edep,stepl);
   }
+  G4String material= aStep -> GetTrack() -> GetMaterial() -> GetName();
+  if (postPoint->GetProcessDefinedStep()->GetProcessName()=="hIoni")
+    {
+      if (volume == fDetector->GetGap() && parentID==0){
+	if(volume != volume2)G4cout << "different volumes"<<G4endl;
+	copyNum = aStep->GetPreStepPoint()->GetTouchable()->GetReplicaNumber(1);
+	//	G4cout <<  material <<G4endl;
+	//	G4double vals=257.5 + (preZ+postZ)/2. - (copyNum)*10.3-.15*2;
+	G4double preGasZ=257.5 + preZ - (copyNum)*10.3-.15*2;
+	G4double postGasZ=257.5 + postZ - (copyNum)*10.3-.15*2;
 
-  if (volume == fDetector->GetGap()){
-    fHistoManager->FillHisto(5, preZ, edep);    
-  //ePerStrip(postz,edep);
-    fEventAction->AddGap(edep,stepl);
-    fEventAction->gapEnergy(edep, copyNum);
-  }
+	G4double stripNumber=0.;
+	G4double stripOff=1.;
+	if(preGasZ>0. and preGasZ<=3.33)stripOff=1; 
+	if(preGasZ>3.33 and preGasZ<=6.66)stripOff=2; 
+	if(preGasZ>6.66 and preGasZ<=10.)stripOff=3; 
+	if(preGasZ>10. and preGasZ<0.)G4cout <<"check geometry"<<G4endl; 
+	/*
+	G4cout<<std::setw(8)<<std::setprecision(5) <<"  layer: "<<   copyNum;
+	G4cout<<std::setw(10)<<std::setprecision(5) <<"preGasZ:"<<preGasZ;
+	G4cout<<std::setw(8)<<std::setprecision(5) <<"  edep: "<<   edep;
+	G4cout<<std::setw(8)<<std::setprecision(5) <<"  preZ: "<<   preZ;
+	G4cout<<std::setw(8)<<std::setprecision(5) <<"  postZ: "<<   postZ;
+	G4cout<<std::setw(8)<<std::setprecision(5) <<"  stepL: "<<   stepl;
+	G4cout<<std::setw(8)<<std::setprecision(5) <<"   stripOff: "<<   stripOff  <<G4endl;
+	*/
+	stripNumber=3*copyNum+stripOff;
+	fHistoManager->FillHisto(5, preGasZ, 1);    
+	fHistoManager->FillHisto(6, preGasZ, edep);    
+	fHistoManager->FillHisto(7, postGasZ, 1);    
+	fHistoManager->FillHisto(8, postGasZ, edep);    
+
+	fHistoManager->FillHisto(9, preZ, 1);    
+	fHistoManager->FillHisto(10, preZ, edep);    
+	fHistoManager->FillHisto(11, postZ, 1);    
+	fHistoManager->FillHisto(12, postZ, edep);    
+
+	G4double start=0;
+	if(preGasZ>0. and preGasZ<=3.33)start=1; 
+	if(preGasZ>3.33 and preGasZ<=6.66)start=2; 
+	if(preGasZ>6.66 and preGasZ<=10.)start=3; 
+	if(preGasZ>10. and preGasZ<0.)G4cout <<"check geometry"<<G4endl; 
+
+
+	G4double stop=0;
+	if((preGasZ+stepl)>0. and (preGasZ+stepl)<=3.33)stop=1; 
+	if((preGasZ+stepl)>3.33 and (preGasZ+stepl)<=6.66)stop=2; 
+	if((preGasZ+stepl)>6.66 and (preGasZ+stepl)<=10.)stop=3; 
+	if((preGasZ+stepl)>10. and (preGasZ+stepl)<0.)G4cout <<"check geometry"<<G4endl; 
+
+	if(stop == 1 && start == 1)fHistoManager->FillHisto(13, 3*copyNum+1, edep);        
+	if(stop == 2 && start == 2)fHistoManager->FillHisto(13, 3*copyNum+2, edep);    
+	if(stop == 3 && start == 3)fHistoManager->FillHisto(13, 3*copyNum+3, edep);    
+
+	G4double edep1,edep2,edep3;
+
+
+	if(stop == 3 && start == 1)
+	  {
+
+	    edep1=(10/3.-preGasZ)/stepl*edep;
+	    edep2=10/3./stepl*edep;
+	    edep3=(preGasZ+stepl-20/3.)/stepl*edep;
+	    //	    G4cout <<edep1<< "   "<<edep2<< "   "<<edep3<< "   "<<edep<< G4endl;
+	    //G4cout << edep-edep1-edep2-edep3<<G4endl;
+	    fHistoManager->FillHisto(13, 3*copyNum+1, edep1);    
+	    fHistoManager->FillHisto(13, 3*copyNum+2, edep2);    
+	    fHistoManager->FillHisto(13, 3*copyNum+3, edep3);    
+	  }
+
+	if(stop == 2 && start == 1)
+	  {
+
+	    edep1=(10/3.-preGasZ)/stepl*edep;
+	    edep2=(preGasZ+stepl-10./3.)/stepl*edep;
+	    edep3=0;
+	    //	    G4cout <<edep1<< "   "<<edep2<< "   "<<edep3<< "   "<<edep<< G4endl;
+	    //	    G4cout << edep-edep1-edep2-edep3<<G4endl;
+	    fHistoManager->FillHisto(13, 3*copyNum+1, edep1);    
+	    fHistoManager->FillHisto(13, 3*copyNum+2, edep2);    
+	    fHistoManager->FillHisto(13, 3*copyNum+3, edep3);    
+
+	  }
+
+	if(stop == 3 && start == 2)
+	  {
+
+	    edep1=0;
+	    edep2=(20/3.-preGasZ)/stepl*edep;
+	    edep3=(preGasZ+stepl-20./3)/stepl*edep;
+	    //	    G4cout <<edep1<< "   "<<edep2<< "   "<<edep3<< "   "<<edep<< "   "<<preGasZ<<G4endl;
+	    //	    G4cout << edep-edep1-edep2-edep3<<G4endl;
+	    fHistoManager->FillHisto(13, 3*copyNum+1, edep1);    
+	    fHistoManager->FillHisto(13, 3*copyNum+2, edep2);    
+	    fHistoManager->FillHisto(13, 3*copyNum+3, edep3);    
+	  }
+
+		//ePerStrip(postz,edep);
+	fEventAction->AddGap(edep,stepl);
+	fEventAction->gapEnergy(edep, copyNum);
+      }
+      
+    }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

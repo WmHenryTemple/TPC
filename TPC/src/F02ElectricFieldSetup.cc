@@ -80,7 +80,7 @@ F02ElectricFieldSetup::F02ElectricFieldSetup()
    fFieldMessenger(nullptr)   
 {
   fEMfield = new G4UniformElectricField(
-                   G4ThreeVector(0.0,2*kilovolt/cm,0.0));
+                   G4ThreeVector(0.0,.75*kilovolt/cm,0.0));
   fEquation = new G4EqMagElectricField(fEMfield);
 
   fFieldManager = GetGlobalFieldManager();

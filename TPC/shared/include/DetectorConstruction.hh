@@ -175,7 +175,9 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
      G4Box*             fSolidCopper;      //pointer to the solid Copper
      G4LogicalVolume*   fLogicCopper;      //pointer to the logical Copper
-     G4VPhysicalVolume* fPhysiCopper;      //pointer to the physical Copper
+     G4VPhysicalVolume* fPhysiCopper1;      //pointer to the physical Copper
+     G4VPhysicalVolume* fPhysiCopper2;      //pointer to the physical Copper
+     G4VPhysicalVolume* fPhysiCopper3;      //pointer to the physical Copper
 
      G4Box*             fSolidPcb;      //pointer to the solid PCB
      G4LogicalVolume*   fLogicPcb;      //pointer to the logical PCB
@@ -204,22 +206,25 @@ inline void DetectorConstruction::ComputeCalorParameters()
      fWorldSizeZ = 10.2*fCalorSizeZ;
 
      //input copper and gap width and thickness
-     //  fNbOfStrips        = 150;
-     fPcbSizeX=fNbOfStrips*(fCopperSizeX+fCuGapSizeX);
+     //  fNbOfStrips        = 3;
+     fPcbSizeX=fCalorThickness;
      fPcbSizeY=fCopperSizeY;
      fPcbSizeZ=fCalorSizeZ;
 
-     fStripSizeX=(fCopperSizeX+fCuGapSizeX);
+     //     fStripSizeX=fNbOfStrips*(fCopperSizeX+fCuGapSizeX);
+     fStripSizeX=fLayerThickness;
      fStripSizeY=fCopperSizeY;
      fStripSizeZ=fCalorSizeZ;
 
-     //  fCuGapSizeX          = 0.1mm;
+     //     fCuGapSizeX          = 0.1mm;
      fCuGapSizeY=fCopperSizeY;
      fCuGapSizeZ=fCalorSizeZ;
 
-     //  fCopperSizeX        = 3.*mm;
+     //     fCopperSizeX        = 3.*mm;
+     fCopperSizeX        = (fLayerThickness-(fNbOfStrips+1)*fCuGapSizeX-fAbsorberThickness)/fNbOfStrips;
      //  fCopperSizeY       = 0.25*mm;
      fCopperSizeZ=fCalorSizeZ;
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

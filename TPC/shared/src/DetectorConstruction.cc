@@ -76,8 +76,8 @@ DetectorConstruction::DetectorConstruction()
   fCalorSizeY       = 8.*cm;
   fCalorSizeZ       = 20.*cm;
 
-  fNbOfStrips        = 166;
-  fCopperSizeX        = 3.*mm;
+  fNbOfStrips        = 3;//166/3
+  //      fCopperSizeX        = (fLayerThickness-(fNbOfStrips+1)*fCuGapSizeX-fAbsorberThickness)/fNbOfStrips;
   fCopperSizeY       = 0.25*mm;
   fCuGapSizeX          = 0.1*mm;
 
@@ -283,24 +283,32 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
                                    0);                      //copy number
     }
 
-     G4double spacing=fCopperSizeX + fCuGapSizeX;
+  //     G4double spacing=fCopperSizeX + fCuGapSizeX;
+     G4double spacing=fLayerThickness;
      G4double value = -(fCalorSizeY/2+fPcbSizeY/2);
 
      fSolidPcb = new G4Box("Pcb",fPcbSizeX/2,fPcbSizeY/2,fPcbSizeZ/2);
      fLogicPcb = new G4LogicalVolume(fSolidPcb,fDefaultMaterial,"Pcb");
      fPhysiPcb = new G4PVPlacement(0,G4ThreeVector(0,value,0.),fLogicPcb,"Pcb",fLogicWorld,false,0);
 
+     
      fSolidStrip = new G4Box("Strip",fStripSizeX/2,fStripSizeY/2,fStripSizeZ/2);
      fLogicStrip = new G4LogicalVolume(fSolidStrip,fDefaultMaterial,"Strip");
-     fPhysiStrip = new G4PVReplica("Strip",fLogicStrip,fLogicPcb,kXAxis,fNbOfStrips,spacing);       
+     fPhysiStrip = new G4PVReplica("Strip",fLogicStrip,fLogicPcb,kXAxis,fNbOfLayers,spacing);       
 
      fSolidCopper = new G4Box("Copper",fCopperSizeX/2,fCopperSizeY/2,fCopperSizeZ/2);
      fLogicCopper = new G4LogicalVolume(fSolidCopper,fDefaultMaterial,"Copper");
-     fPhysiCopper = new G4PVPlacement(0, G4ThreeVector( (fCopperSizeX-fStripSizeX)/2 , 0. , 0.),fLogicCopper,"Copper",fLogicStrip,false,0);
+     // three strips per absorber
+     fPhysiCopper1 = new G4PVPlacement(0, G4ThreeVector( (fCopperSizeX+fCuGapSizeX) , 0. , 0.),fLogicCopper,"Copper1",fLogicStrip,false,0);
+     fPhysiCopper2 = new G4PVPlacement(0, G4ThreeVector( 0. , 0. , 0.                        ),fLogicCopper,"Copper2",fLogicStrip,false,0);
+     fPhysiCopper3 = new G4PVPlacement(0, G4ThreeVector(-(fCopperSizeX+fCuGapSizeX) , 0. , 0.),fLogicCopper,"Copper3",fLogicStrip,false,0);
 
-     fSolidCuGap = new G4Box("CuGap",fCuGapSizeX/2,fCuGapSizeY/2,fCuGapSizeZ/2);
-     fLogicCuGap = new G4LogicalVolume(fSolidCuGap,fDefaultMaterial,"CuGap");
-     fPhysiCuGap = new G4PVPlacement(0, G4ThreeVector( -(fCuGapSizeX-fStripSizeX)/2 , 0. , 0.),fLogicCuGap,"CuGap",fLogicStrip,false,0);
+
+
+
+     //     fSolidCuGap = new G4Box("CuGap",fCuGapSizeX/2,fCuGapSizeY/2,fCuGapSizeZ/2);
+     //     fLogicCuGap = new G4LogicalVolume(fSolidCuGap,fDefaultMaterial,"CuGap");
+     //     fPhysiCuGap = new G4PVPlacement(0, G4ThreeVector( -(fCuGapSizeX-fStripSizeX)/2 , 0. , 0.),fLogicCuGap,"CuGap",fLogicStrip,false,0);
 
 
   PrintCalorParameters();     
@@ -310,8 +318,8 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
      fLogicWorld->SetVisAttributes (G4VisAttributes::GetInvisible());
      fLogicCalor->SetVisAttributes (G4VisAttributes::GetInvisible());
      fLogicLayer->SetVisAttributes (G4VisAttributes::GetInvisible());
-     fLogicCuGap->SetVisAttributes (G4VisAttributes::GetInvisible());
-     fLogicStrip->SetVisAttributes (G4VisAttributes::GetInvisible());
+     //     fLogicCuGap->SetVisAttributes (G4VisAttributes::GetInvisible());
+     //     fLogicStrip->SetVisAttributes (G4VisAttributes::GetInvisible());
      fLogicGap->SetVisAttributes (G4VisAttributes::GetInvisible());
      fLogicPcb->SetVisAttributes (G4VisAttributes::GetInvisible());
      G4VisAttributes* simpleBoxVisAtt= new G4VisAttributes(G4Colour(1.0,0.0,1.0));
