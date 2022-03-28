@@ -58,14 +58,16 @@ void RE01TrackingAction::PostUserTrackingAction(const G4Track* aTrack)
 {
 
   // Create trajectory only for track in tracking region
-  //  G4int fOriginalTrackID = aTrack->GetTrackID();
-  //  G4ParticleDefinition *fParticleDefinition = aTrack->GetDefinition();
-  //  G4ThreeVector fOriginalPosition = aTrack->GetPosition(); 
-  //  G4ThreeVector fOriginalMomentum = aTrack->GetMomentum(); 
-  //  G4double fOriginalEnergy = aTrack->GetTotalEnergy(); 
-  //  G4double fOriginalTime = aTrack->GetGlobalTime();
+  G4int fOriginalTrackID = aTrack->GetTrackID();
+  G4ParticleDefinition *fParticleDefinition = aTrack->GetDefinition();
+  G4ThreeVector fOriginalPosition = aTrack->GetPosition(); 
+  G4ThreeVector fOriginalMomentum = aTrack->GetMomentum(); 
+  G4double fOriginalEnergy = aTrack->GetTotalEnergy(); 
+  G4double fOriginalTime = aTrack->GetGlobalTime();
 
-
+  G4cout << fOriginalTrackID << "\t";
+  G4cout << fOriginalPosition.getX() << "\t";
+  G4cout << fOriginalTrackID << "\t"<<G4endl;
 
 }
 

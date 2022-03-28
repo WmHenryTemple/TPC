@@ -33,7 +33,7 @@
 #include "RunAction.hh"
 #include "EventAction.hh"
 #include "SteppingAction.hh"
-//#include "RE01TrackingAction.hh"
+#include "RE01TrackingAction.hh"
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -79,7 +79,7 @@ void ActionInitialization::Build() const
   SteppingAction* steppingAction = new SteppingAction(fDetector, eventAction, histo);
   SetUserAction(steppingAction);
 
-  //  SetUserAction(new RE01TrackingAction);
+  SetUserAction(new RE01TrackingAction);
 }  
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

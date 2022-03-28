@@ -89,66 +89,61 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
   if (volume == fDetector->GetAbsorber()){
     fEventAction->AddAbs(edep,stepl);
   }
+
   G4String material= aStep -> GetTrack() -> GetMaterial() -> GetName();
+
   if (postPoint->GetProcessDefinedStep()->GetProcessName()=="hIoni")
     {
-      if (volume == fDetector->GetGap() && parentID==0){
+      G4bool inGap1=(volume == fDetector->GetGap1());
+      G4bool inGap2=(volume == fDetector->GetGap2());
+      G4bool inGap3=(volume == fDetector->GetGap3());
+      G4bool inGap=(inGap1||inGap2||inGap3);
+
+      if (inGap && parentID==0){
 	if(volume != volume2)G4cout << "different volumes"<<G4endl;
 	copyNum = aStep->GetPreStepPoint()->GetTouchable()->GetReplicaNumber(1);
-	//	G4cout <<  material <<G4endl;
-	//	G4double vals=257.5 + (preZ+postZ)/2. - (copyNum)*10.3-.15*2;
+
 	G4double preGasZ=257.5 + preZ - (copyNum)*10.3-.15*2;
 	G4double postGasZ=257.5 + postZ - (copyNum)*10.3-.15*2;
-
 	G4double stripNumber=0.;
 	G4double stripOff=1.;
-	if(preGasZ>0. and preGasZ<=3.33)stripOff=1; 
-	if(preGasZ>3.33 and preGasZ<=6.66)stripOff=2; 
-	if(preGasZ>6.66 and preGasZ<=10.)stripOff=3; 
-	if(preGasZ>10. and preGasZ<0.)G4cout <<"check geometry"<<G4endl; 
-	/*
-	G4cout<<std::setw(8)<<std::setprecision(5) <<"  layer: "<<   copyNum;
-	G4cout<<std::setw(10)<<std::setprecision(5) <<"preGasZ:"<<preGasZ;
-	G4cout<<std::setw(8)<<std::setprecision(5) <<"  edep: "<<   edep;
-	G4cout<<std::setw(8)<<std::setprecision(5) <<"  preZ: "<<   preZ;
-	G4cout<<std::setw(8)<<std::setprecision(5) <<"  postZ: "<<   postZ;
-	G4cout<<std::setw(8)<<std::setprecision(5) <<"  stepL: "<<   stepl;
-	G4cout<<std::setw(8)<<std::setprecision(5) <<"   stripOff: "<<   stripOff  <<G4endl;
-	*/
+
+	if(inGap1)stripOff=1;
+	if(inGap2)stripOff=2;
+	if(inGap3)stripOff=3;
 	stripNumber=3*copyNum+stripOff;
+
 	fHistoManager->FillHisto(5, preGasZ, 1);    
 	fHistoManager->FillHisto(6, preGasZ, edep);    
 	fHistoManager->FillHisto(7, postGasZ, 1);    
 	fHistoManager->FillHisto(8, postGasZ, edep);    
-
 	fHistoManager->FillHisto(9, preZ, 1);    
 	fHistoManager->FillHisto(10, preZ, edep);    
 	fHistoManager->FillHisto(11, postZ, 1);    
 	fHistoManager->FillHisto(12, postZ, edep);    
-
+	fEventAction->AddGap(edep,stepl);// accumulates edep/step
+	fEventAction->gapEnergy(edep, copyNum);// fills array per event
+	fEventAction->stripEnergy(edep, stripNumber);// fills array per event
+	/////////////////////////////////////////////////
+	////////  Find what chamber the step started
+	////////  and ended.  The split up E deposited
+	////////  among strips.  Not working?!
 	G4double start=0;
 	if(preGasZ>0. and preGasZ<=3.33)start=1; 
 	if(preGasZ>3.33 and preGasZ<=6.66)start=2; 
 	if(preGasZ>6.66 and preGasZ<=10.)start=3; 
 	if(preGasZ>10. and preGasZ<0.)G4cout <<"check geometry"<<G4endl; 
-
-
 	G4double stop=0;
 	if((preGasZ+stepl)>0. and (preGasZ+stepl)<=3.33)stop=1; 
 	if((preGasZ+stepl)>3.33 and (preGasZ+stepl)<=6.66)stop=2; 
 	if((preGasZ+stepl)>6.66 and (preGasZ+stepl)<=10.)stop=3; 
 	if((preGasZ+stepl)>10. and (preGasZ+stepl)<0.)G4cout <<"check geometry"<<G4endl; 
-
 	if(stop == 1 && start == 1)fHistoManager->FillHisto(13, 3*copyNum+1, edep);        
 	if(stop == 2 && start == 2)fHistoManager->FillHisto(13, 3*copyNum+2, edep);    
 	if(stop == 3 && start == 3)fHistoManager->FillHisto(13, 3*copyNum+3, edep);    
-
 	G4double edep1,edep2,edep3;
-
-
 	if(stop == 3 && start == 1)
 	  {
-
 	    edep1=(10/3.-preGasZ)/stepl*edep;
 	    edep2=10/3./stepl*edep;
 	    edep3=(preGasZ+stepl-20/3.)/stepl*edep;
@@ -158,10 +153,8 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 	    fHistoManager->FillHisto(13, 3*copyNum+2, edep2);    
 	    fHistoManager->FillHisto(13, 3*copyNum+3, edep3);    
 	  }
-
 	if(stop == 2 && start == 1)
 	  {
-
 	    edep1=(10/3.-preGasZ)/stepl*edep;
 	    edep2=(preGasZ+stepl-10./3.)/stepl*edep;
 	    edep3=0;
@@ -170,12 +163,9 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 	    fHistoManager->FillHisto(13, 3*copyNum+1, edep1);    
 	    fHistoManager->FillHisto(13, 3*copyNum+2, edep2);    
 	    fHistoManager->FillHisto(13, 3*copyNum+3, edep3);    
-
 	  }
-
 	if(stop == 3 && start == 2)
 	  {
-
 	    edep1=0;
 	    edep2=(20/3.-preGasZ)/stepl*edep;
 	    edep3=(preGasZ+stepl-20./3)/stepl*edep;
@@ -187,8 +177,19 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 	  }
 
 		//ePerStrip(postz,edep);
-	fEventAction->AddGap(edep,stepl);
-	fEventAction->gapEnergy(edep, copyNum);
+	//fEventAction->lastPos(stripNumber,inGap);
+	/*
+	  G4cout <<  material <<G4endl;
+	  G4cout<<std::setw(8)<<std::setprecision(5) <<"  layer: "<<   copyNum;
+	  G4cout<<std::setw(10)<<std::setprecision(5) <<"preGasZ:"<<preGasZ;
+	  G4cout<<std::setw(8)<<std::setprecision(5) <<"  edep: "<<   edep;
+	  G4cout<<std::setw(8)<<std::setprecision(5) <<"  preZ: "<<   preZ;
+	  G4cout<<std::setw(8)<<std::setprecision(5) <<"  postZ: "<<   postZ;
+	  G4cout<<std::setw(8)<<std::setprecision(5) <<"  stepL: "<<   stepl;
+	  G4cout<<std::setw(8)<<std::setprecision(5) <<"   stripOff: "<<   stripOff  <<G4endl;
+	  G4cout << inGap1 <<"  "<<inGap2 <<"  "<<inGap3 <<G4endl;
+	*/
+
       }
       
     }

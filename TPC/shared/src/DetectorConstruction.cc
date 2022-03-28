@@ -66,7 +66,7 @@ DetectorConstruction::DetectorConstruction()
  fSolidCalor(0),fLogicCalor(0),fPhysiCalor(0),
  fSolidLayer(0),fLogicLayer(0),fPhysiLayer(0),
  fSolidAbsorber(0),fLogicAbsorber(0),fPhysiAbsorber(0),
- fSolidGap (0),fLogicGap (0),fPhysiGap (0),
+ fSolidGap (0),fLogicGap (0),fPhysiGap1 (0),fPhysiGap2 (0),fPhysiGap3 (0),
   fDetectorMessenger(0), fEmFieldSetup (0)
 {
   // default parameter values of the calorimeter
@@ -91,8 +91,6 @@ DetectorConstruction::DetectorConstruction()
 
   // create commands for interactive definition of the calorimeter
   fDetectorMessenger = new DetectorMessenger(this);
-
-
   fEmFieldSetup = new F02ElectricFieldSetup() ;
 
 }
@@ -263,19 +261,35 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
   //                                 
   // Gap
   //
-  fSolidGap=0; fLogicGap=0; fPhysiGap=0; 
-  fSolidGap=0; fLogicGap=0; fPhysiGap=0; 
+  fSolidGap=0; fLogicGap=0; fPhysiGap1=0; fPhysiGap2=0; fPhysiGap3=0; 
+
   
   if (fGapThickness > 0.)
     { fSolidGap = new G4Box("Gap",
-                               fGapThickness/2,fCalorSizeY/2,fCalorSizeZ/2);
+                               fGapThickness/6.,fCalorSizeY/2,fCalorSizeZ/2);
                                
       fLogicGap = new G4LogicalVolume(fSolidGap,
                                            fGapMaterial,
                                            fGapMaterial->GetName());
                                            
-      fPhysiGap = new G4PVPlacement(0,                      //no rotation
+      fPhysiGap1 = new G4PVPlacement(0,                      //no rotation
+               G4ThreeVector(fAbsorberThickness/2-fGapThickness/3.,0.,0.),   //its position
+                                   fLogicGap,               //its logical volume
+                                   fGapMaterial->GetName(), //its name
+                                   fLogicLayer,             //its mother
+                                   false,                   //no boulean operat
+                                   0);                      //copy number
+
+      fPhysiGap2 = new G4PVPlacement(0,                      //no rotation
                G4ThreeVector(fAbsorberThickness/2,0.,0.),   //its position
+                                   fLogicGap,               //its logical volume
+                                   fGapMaterial->GetName(), //its name
+                                   fLogicLayer,             //its mother
+                                   false,                   //no boulean operat
+                                   0);                      //copy number
+
+      fPhysiGap3 = new G4PVPlacement(0,                      //no rotation
+               G4ThreeVector(fAbsorberThickness/2+fGapThickness/3.,0.,0.),   //its position
                                    fLogicGap,               //its logical volume
                                    fGapMaterial->GetName(), //its name
                                    fLogicLayer,             //its mother

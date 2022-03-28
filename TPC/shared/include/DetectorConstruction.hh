@@ -97,7 +97,9 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
      const G4VPhysicalVolume* GetphysiWorld() {return fPhysiWorld;};           
      const G4VPhysicalVolume* GetAbsorber()   {return fPhysiAbsorber;};
-     const G4VPhysicalVolume* GetGap()        {return fPhysiGap;};
+     const G4VPhysicalVolume* GetGap1()        {return fPhysiGap1;};
+     const G4VPhysicalVolume* GetGap2()        {return fPhysiGap2;};
+     const G4VPhysicalVolume* GetGap3()        {return fPhysiGap3;};
      const G4VPhysicalVolume* GetStrip()        {return fPhysiStrip;};
                  
   private:
@@ -167,7 +169,9 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
      G4Box*             fSolidGap;      //pointer to the solid Gap
      G4LogicalVolume*   fLogicGap;      //pointer to the logical Gap
-     G4VPhysicalVolume* fPhysiGap;      //pointer to the physical Gap
+     G4VPhysicalVolume* fPhysiGap1;      //pointer to the physical Gap
+     G4VPhysicalVolume* fPhysiGap2;      //pointer to the physical Gap
+     G4VPhysicalVolume* fPhysiGap3;      //pointer to the physical Gap
 
      G4Box*             fSolidCuGap;      //pointer to the solid CuGap
      G4LogicalVolume*   fLogicCuGap;      //pointer to the logical CuGap

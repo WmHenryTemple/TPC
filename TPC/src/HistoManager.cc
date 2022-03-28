@@ -99,7 +99,10 @@ void HistoManager::Book()
   fHisto[11] = new TH1D("evPostZ", "# steps vs post-step Z position ", 1000, 300, -300);
   fHisto[12] = new TH1D("dePostZ", "Energy deposited vs post-step Z position ", 1000, 300, -300);
 
-  fHisto[13] = new TH1D("deStrip", "Energy deposited vs Strip number  ", 1000, 300, -300);
+  fHisto[13] = new TH1D("deStrip_shared", "Energy deposited vs Strip number  ", 200, 0.5, 200.5);
+  fHisto[14] = new TH1D("deStrip", "Energy deposited vs Strip number  ", 200, 0.5, 200.5);
+
+  fHisto[15] = new TH1D("lastStrip", "Last Strip number Hit  ", 200, 0.5, 200.5);
 
   
 

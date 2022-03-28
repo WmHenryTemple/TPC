@@ -68,6 +68,7 @@ void EventAction::BeginOfEventAction(const G4Event* evt)
  fEnergyAbs = fEnergyGap = 0.;
  fTrackLAbs = fTrackLGap = 0.;
  for(int i=0;i<50;i++)fGapE[i]=0;
+ for(int i=0;i<200;i++)fStripE[i]=0;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -84,6 +85,15 @@ void EventAction::EndOfEventAction(const G4Event*)
   fHistoManager->FillHisto(2, fTrackLAbs);
   fHistoManager->FillHisto(3, fTrackLGap);
   for(int i=0; i<50; i++)fHistoManager->FillHisto(4, i, fGapE[i]);
+  for(int i=0; i<200; i++)fHistoManager->FillHisto(14, i, fStripE[i]);
+  G4int lastStrip=-1;  
+
+  for(int i=0; i<200; i++){
+    if(fStripE[i]!=0)lastStrip=i+1;
+  }
+  
+  fHistoManager->FillHisto(15, lastStrip);
+
     //    G4cout << "fHistoManager->FillHisto(4, i, fGapE[i]); " << i <<"  " << fGapE[i]<<G4endl;
   //fill ntuple
   //
