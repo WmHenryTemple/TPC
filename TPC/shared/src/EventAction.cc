@@ -87,12 +87,18 @@ void EventAction::EndOfEventAction(const G4Event*)
   for(int i=0; i<50; i++)fHistoManager->FillHisto(4, i, fGapE[i]);
   for(int i=0; i<200; i++)fHistoManager->FillHisto(14, i, fStripE[i]);
   G4int lastStrip=-1;  
+  G4int lastGap=-1;  
 
   for(int i=0; i<200; i++){
     if(fStripE[i]!=0)lastStrip=i+1;
   }
+
+  for(int i=0; i<50; i++){
+    if(fGapE[i]!=0)lastGap=i+1;
+  }
   
   fHistoManager->FillHisto(15, lastStrip);
+  fHistoManager->FillHisto(16, lastGap);
 
     //    G4cout << "fHistoManager->FillHisto(4, i, fGapE[i]); " << i <<"  " << fGapE[i]<<G4endl;
   //fill ntuple

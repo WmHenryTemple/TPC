@@ -99,7 +99,6 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
       G4bool inGap3=(volume == fDetector->GetGap3());
       G4bool inGap=(inGap1||inGap2||inGap3);
 
-      //      if (inGap && parentID==0){
       if (inGap){
 	//	if(postPoint->GetProcessDefinedStep()->GetProcessName()!="hIoni"){
 	//	  G4cout << postPoint->GetProcessDefinedStep()->GetProcessName()<<"      "<<edep<< G4endl;
