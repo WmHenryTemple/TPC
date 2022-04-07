@@ -211,7 +211,7 @@ inline void DetectorConstruction::ComputeCalorParameters()
 
      //input copper and gap width and thickness
      //  fNbOfStrips        = 3;
-     fPcbSizeX=fCalorThickness;
+     fPcbSizeX=fCalorThickness-fLayerThickness;
      fPcbSizeY=fCopperSizeY;
      fPcbSizeZ=fCalorSizeZ;
 

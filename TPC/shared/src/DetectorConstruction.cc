@@ -303,19 +303,19 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
 
      fSolidPcb = new G4Box("Pcb",fPcbSizeX/2,fPcbSizeY/2,fPcbSizeZ/2);
      fLogicPcb = new G4LogicalVolume(fSolidPcb,fDefaultMaterial,"Pcb");
-     fPhysiPcb = new G4PVPlacement(0,G4ThreeVector(0,value,0.),fLogicPcb,"Pcb",fLogicWorld,false,0);
+     fPhysiPcb = new G4PVPlacement(0,G4ThreeVector(-fLayerThickness/2,value,0.),fLogicPcb,"Pcb",fLogicWorld,false,0);
 
      
      fSolidStrip = new G4Box("Strip",fStripSizeX/2,fStripSizeY/2,fStripSizeZ/2);
      fLogicStrip = new G4LogicalVolume(fSolidStrip,fDefaultMaterial,"Strip");
-     fPhysiStrip = new G4PVReplica("Strip",fLogicStrip,fLogicPcb,kXAxis,fNbOfLayers,spacing);       
+     fPhysiStrip = new G4PVReplica("Strip",fLogicStrip,fLogicPcb,kXAxis,fNbOfLayers-1,spacing);       
 
      fSolidCopper = new G4Box("Copper",fCopperSizeX/2,fCopperSizeY/2,fCopperSizeZ/2);
      fLogicCopper = new G4LogicalVolume(fSolidCopper,fDefaultMaterial,"Copper");
      // three strips per absorber
-     fPhysiCopper1 = new G4PVPlacement(0, G4ThreeVector( (fCopperSizeX+fCuGapSizeX) , 0. , 0.),fLogicCopper,"Copper1",fLogicStrip,false,0);
-     fPhysiCopper2 = new G4PVPlacement(0, G4ThreeVector( 0. , 0. , 0.                        ),fLogicCopper,"Copper2",fLogicStrip,false,0);
-     fPhysiCopper3 = new G4PVPlacement(0, G4ThreeVector(-(fCopperSizeX+fCuGapSizeX) , 0. , 0.),fLogicCopper,"Copper3",fLogicStrip,false,0);
+     fPhysiCopper1 = new G4PVPlacement(0, G4ThreeVector( (fAbsorberThickness/2+fCopperSizeX+fCuGapSizeX) , 0. , 0.),fLogicCopper,"Copper1",fLogicStrip,false,0);
+     fPhysiCopper2 = new G4PVPlacement(0, G4ThreeVector( fAbsorberThickness/2+0. , 0. , 0.                        ),fLogicCopper,"Copper2",fLogicStrip,false,0);
+     fPhysiCopper3 = new G4PVPlacement(0, G4ThreeVector(fAbsorberThickness/2-(fCopperSizeX+fCuGapSizeX) , 0. , 0.),fLogicCopper,"Copper3",fLogicStrip,false,0);
 
 
 
@@ -339,10 +339,14 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
      G4VisAttributes* simpleBoxVisAtt= new G4VisAttributes(G4Colour(1.0,0.0,1.0));
      simpleBoxVisAtt->SetVisibility(true);
      fLogicAbsorber->SetVisAttributes(simpleBoxVisAtt);
-
+     //green 0 1 0
      G4VisAttributes* simpleStripVisAtt= new G4VisAttributes(G4Colour(0.0,1.0,0.0));
      simpleStripVisAtt->SetVisibility(true);
      fLogicCopper->SetVisAttributes(simpleStripVisAtt);
+     //yellow 1 1 0
+     //     G4VisAttributes* simpleGapVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,0.0));
+     //     simpleGapVisAtt->SetVisibility(true);
+     //     fLogicGap->SetVisAttributes(simpleGapVisAtt);     
 
   //
   //always return the physical World

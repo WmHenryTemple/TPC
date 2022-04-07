@@ -80,6 +80,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
   G4double preZ=preZvec.getX();
   G4double postZ=postZvec.getX();
 
+  G4double dz=abs(postZ-preZ);
   G4int copyNum=0;
   G4int parentID = aStep->GetTrack()->GetParentID();
 
@@ -92,19 +93,14 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 
   G4String material= aStep -> GetTrack() -> GetMaterial() -> GetName();
 
-     //   if (postPoint->GetProcessDefinedStep()->GetProcessName()=="hIoni")
-    {
-      G4bool inGap1=(volume == fDetector->GetGap1());
-      G4bool inGap2=(volume == fDetector->GetGap2());
-      G4bool inGap3=(volume == fDetector->GetGap3());
-      G4bool inGap=(inGap1||inGap2||inGap3);
+  G4bool inGap1=(volume == fDetector->GetGap1());
+  G4bool inGap2=(volume == fDetector->GetGap2());
+  G4bool inGap3=(volume == fDetector->GetGap3());
+  G4bool inGap=(inGap1||inGap2||inGap3);
+  if (postPoint->GetProcessDefinedStep()->GetProcessName()=="hIoni"){
+      if (inGap && parentID==0){
 
-      //      if (inGap && parentID==0){
-      if (inGap){
-	//	if(postPoint->GetProcessDefinedStep()->GetProcessName()!="hIoni"){
-	//	  G4cout << postPoint->GetProcessDefinedStep()->GetProcessName()<<"      "<<edep<< G4endl;
-	//	}
-	//	if(volume != volume2)G4cout << "different volumes"<<G4endl;
+	if(volume != volume2)G4cout << "different volumes"<<G4endl;
 	copyNum = aStep->GetPreStepPoint()->GetTouchable()->GetReplicaNumber(1);
 
 	G4double preGasZ=257.5 + preZ - (copyNum)*10.3-.15*2;
@@ -138,10 +134,10 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 	if(preGasZ>6.66 and preGasZ<=10.)start=3; 
 	if(preGasZ>10. and preGasZ<0.)G4cout <<"check geometry"<<G4endl; 
 	G4double stop=0;
-	if((preGasZ+stepl)>0. and (preGasZ+stepl)<=3.33)stop=1; 
-	if((preGasZ+stepl)>3.33 and (preGasZ+stepl)<=6.66)stop=2; 
-	if((preGasZ+stepl)>6.66 and (preGasZ+stepl)<=10.)stop=3; 
-	if((preGasZ+stepl)>10. and (preGasZ+stepl)<0.)G4cout <<"check geometry"<<G4endl; 
+	if((abs(preGasZ)+dz)>0. and (abs(preGasZ)+dz)<=3.33)stop=1; 
+	if((abs(preGasZ)+dz)>3.33 and (abs(preGasZ)+dz)<=6.66)stop=2; 
+	if((abs(preGasZ)+dz)>6.66 and (abs(preGasZ)+dz)<=10.)stop=3; 
+	if((abs(preGasZ)+dz)>10. and (abs(preGasZ)+dz)<0.)G4cout <<"check geometry"<<G4endl; 
 	if(stop == 1 && start == 1)fHistoManager->FillHisto(13, 3*copyNum+1, edep);        
 	if(stop == 2 && start == 2)fHistoManager->FillHisto(13, 3*copyNum+2, edep);    
 	if(stop == 3 && start == 3)fHistoManager->FillHisto(13, 3*copyNum+3, edep);    
@@ -150,7 +146,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 	  {
 	    edep1=(10/3.-preGasZ)/stepl*edep;
 	    edep2=10/3./stepl*edep;
-	    edep3=(preGasZ+stepl-20/3.)/stepl*edep;
+	    edep3=(abs(preGasZ)+dz-20/3.)/stepl*edep;
 	    //	    G4cout <<edep1<< "   "<<edep2<< "   "<<edep3<< "   "<<edep<< G4endl;
 	    //G4cout << edep-edep1-edep2-edep3<<G4endl;
 	    fHistoManager->FillHisto(13, 3*copyNum+1, edep1);    
@@ -160,7 +156,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 	if(stop == 2 && start == 1)
 	  {
 	    edep1=(10/3.-preGasZ)/stepl*edep;
-	    edep2=(preGasZ+stepl-10./3.)/stepl*edep;
+	    edep2=(abs(preGasZ)+dz-10./3.)/stepl*edep;
 	    edep3=0;
 	    //	    G4cout <<edep1<< "   "<<edep2<< "   "<<edep3<< "   "<<edep<< G4endl;
 	    //	    G4cout << edep-edep1-edep2-edep3<<G4endl;
@@ -172,7 +168,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 	  {
 	    edep1=0;
 	    edep2=(20/3.-preGasZ)/stepl*edep;
-	    edep3=(preGasZ+stepl-20./3)/stepl*edep;
+	    edep3=(abs(preGasZ)+dz-20./3)/stepl*edep;
 	    //	    G4cout <<edep1<< "   "<<edep2<< "   "<<edep3<< "   "<<edep<< "   "<<preGasZ<<G4endl;
 	    //	    G4cout << edep-edep1-edep2-edep3<<G4endl;
 	    fHistoManager->FillHisto(13, 3*copyNum+1, edep1);    

@@ -10,7 +10,7 @@
 
 # p+ 75MeV 
 /gun/particle proton
-/gun/energy 30 MeV
+/gun/energy 45 MeV
 #/run/beamOn 1000
 
 # Test commands defined in this example
