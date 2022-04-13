@@ -80,9 +80,17 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
   G4double preZ=preZvec.getX();
   G4double postZ=postZvec.getX();
 
+  G4double preE=prePoint->GetKineticEnergy();
+  G4double postE=postPoint->GetKineticEnergy();
+
+  
   G4double dz=abs(postZ-preZ);
   G4int copyNum=0;
   G4int parentID = aStep->GetTrack()->GetParentID();
+
+  //  if(parentID==0)	G4cout <<"Energy pre, post, and post-pre"<<"\t"<<preE<<"\t"<<postE<<"\t"<<postE-preE<<G4endl;
+
+  
 
   if (aStep->GetTrack()->GetDefinition()->GetPDGCharge() != 0.)
     stepl = aStep->GetStepLength();
@@ -97,8 +105,22 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
   G4bool inGap2=(volume == fDetector->GetGap2());
   G4bool inGap3=(volume == fDetector->GetGap3());
   G4bool inGap=(inGap1||inGap2||inGap3);
+
+  G4Track* theTrack = aStep -> GetTrack();
+
+  // check if it is alive
+  G4double volumeId=0;
+  if(!(theTrack->GetTrackStatus() == fAlive)&&parentID==0){
+  //  if(postE<0.25 && parentID==0){
+    if(inGap)volumeId=1;
+    else if(volume == fDetector->GetAbsorber())volumeId=2;
+    else volumeId=3;
+    fHistoManager->FillHisto(17, volumeId);
+  }
+
   if (postPoint->GetProcessDefinedStep()->GetProcessName()=="hIoni"){
       if (inGap && parentID==0){
+
 
 	if(volume != volume2)G4cout << "different volumes"<<G4endl;
 	copyNum = aStep->GetPreStepPoint()->GetTouchable()->GetReplicaNumber(1);

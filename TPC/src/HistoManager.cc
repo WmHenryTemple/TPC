@@ -105,6 +105,7 @@ void HistoManager::Book()
   fHisto[15] = new TH1D("lastStrip", "Last Strip number Hit  ", 200, 0.5, 200.5);
 
   fHisto[16] = new TH1D("lastGap", "Last Gap Hit  ", 50, 0.5, 50.5);
+  fHisto[17] = new TH1D("stopVolume", "Last Volume Hit  ", 4, -0.5, 3.5);
 
   
 
