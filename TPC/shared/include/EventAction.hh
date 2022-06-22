@@ -57,15 +57,25 @@ public:
   void AddGap(G4double de, G4double dl) {fEnergyGap += de; fTrackLGap += dl;};
   void gapEnergy(G4double de, G4int chamber) {fGapE[chamber]+=de;};
   void stripEnergy(G4double de, G4int strip) {fStripE[strip]+=de;};
+
+  void absEnergy(G4double de, G4int abs) {
+    //    G4cout << "In absEnergy, fAbsE["<<abs<<"]: "<<fAbsE[abs];
+    fAbsE[abs]+=de;
+    //    G4cout << "    after  absEnergy, fAbsE["<<abs<<"]: "<<fAbsE[abs]<<G4endl;    
+  };  
+
+  void eLastAbs(G4double de){fLastAbsEnergy+=de;};
   //void lastPos(G4double pos, G4bool inGap){if(inGap)fLastPos=pos;else fLastPos=-1;}
 private:
    RunAction*    fRunAct;
    HistoManager* fHistoManager;
    G4double fGapE[50];   
-   G4double fStripE[200];   
+   G4double fStripE[200];
+   G4double fAbsE[50];     
    G4double  fEnergyAbs, fEnergyGap;
    G4double  fTrackLAbs, fTrackLGap;
    G4double  fLastPos;
+  G4double  fLastAbsEnergy;
                      
    G4int     fPrintModulo;                             
 };

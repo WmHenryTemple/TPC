@@ -68,10 +68,18 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
   //histograms
   //
   fHistoManager->Book(); 
+  outTxt.open("ePerStrip.txt",std::ios::out);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+void RunAction::WritePerEvent(G4double arr[], G4int size){
+
+  for(G4int i=0; i<size; i++){
+    G4cout <<i<<"\t"<< arr[i] << G4endl;
+    outTxt <<i<<"\t"<< arr[i] << G4endl;    
+  }
+}
 void RunAction::FillPerEvent(G4double EAbs, G4double EGap,
                                   G4double LAbs, G4double LGap)
 {
@@ -82,6 +90,7 @@ void RunAction::FillPerEvent(G4double EAbs, G4double EGap,
   
   fSumLAbs += LAbs;  fSum2LAbs += LAbs*LAbs;
   fSumLGap += LGap;  fSum2LGap += LGap*LGap;  
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -90,7 +99,7 @@ void RunAction::EndOfRunAction(const G4Run* aRun)
 {
   G4int NbOfEvents = aRun->GetNumberOfEvent();
   if (NbOfEvents == 0) return;
-  
+  outTxt.close();
   //compute statistics: mean and rms
   //
   fSumEAbs /= NbOfEvents; fSum2EAbs /= NbOfEvents;

@@ -42,9 +42,11 @@
 #include "G4NistManager.hh"
 
 #include "G4Box.hh"
+#include "G4Tubs.hh"
 #include "G4LogicalVolume.hh"
 #include "G4PVPlacement.hh"
 #include "G4PVReplica.hh"
+#include "G4RotationMatrix.hh"
 
 #include "G4StateManager.hh"
 #include "G4GeometryManager.hh"
@@ -56,6 +58,8 @@
 #include "G4Colour.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4RunManager.hh"
+#include "G4UnitsTable.hh"
+#include "G4PhysicalConstants.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -64,13 +68,32 @@ DetectorConstruction::DetectorConstruction()
  fAbsorberMaterial(0),fGapMaterial(0),fDefaultMaterial(0),
  fSolidWorld(0),fLogicWorld(0),fPhysiWorld(0),
  fSolidCalor(0),fLogicCalor(0),fPhysiCalor(0),
+  fSolidPatient(0),fLogicPatient(0),fPhysiPatient(0),
  fSolidLayer(0),fLogicLayer(0),fPhysiLayer(0),
  fSolidAbsorber(0),fLogicAbsorber(0),fPhysiAbsorber(0),
  fSolidGap (0),fLogicGap (0),fPhysiGap1 (0),fPhysiGap2 (0),fPhysiGap3 (0),
-  fDetectorMessenger(0), fEmFieldSetup (0)
+ fAnnulusMother(0), fAnnulusInner(0), fAnnulusOuter(0),
+ fLogicAnnulusMother(0), fLogicAnnulusInner(0), fLogicAnnulusOuter(0),
+ fPhysiAnnulusMother(0), fPhysiAnnulusInner(0), fPhysiAnnulusOuter(0),
+ fDetectorMessenger(0), fEmFieldSetup (0)
 {
   // default parameter values of the calorimeter
   fAbsorberThickness = 0.3*mm;
+  fShutterThickness = 35.*mm;
+  fAnnulusPositionX=40.*cm;
+  //  fPatientThickness = 120.*mm;
+  fPatientThickness = 0.;  
+
+  fShutterY=0*cm;
+  fShutterY=16*cm;  
+  fPatientY=0*cm;
+
+  
+  fPatientShutterGap = 300.*mm;  
+  fPatientSizeY = 120.*mm;
+  fPatientSizeZ = 120.*mm;
+  fPatientPositionX = 120.*mm;    
+  
   fGapThickness      =  10.*mm;
   fNbOfLayers        = 50;
   fCalorSizeY       = 8.*cm;
@@ -116,9 +139,14 @@ void DetectorConstruction::DefineMaterials()
 G4NistManager* man = G4NistManager::Instance();
 fDefaultMaterial = man->FindOrBuildMaterial("G4_Galactic");
 man->FindOrBuildMaterial("G4_Pb");
+fWater= man->FindOrBuildMaterial("G4_WATER");
 man->FindOrBuildMaterial("G4_lAr");
 man->FindOrBuildMaterial("G4_MYLAR");
  fCopperMaterial=man->FindOrBuildMaterial("G4_Cu");
+ fBone=man->FindOrBuildMaterial("G4_B-100_BONE");
+ // fTissue=man->FindOrBuildMaterial("G4_B-100_BONE"); 
+ //  fBone=man->FindOrBuildMaterial("G4_ADIPOSE_TISSUE_ICRP");  
+ fTissue=man->FindOrBuildMaterial("G4_ADIPOSE_TISSUE_ICRP"); 
  G4double density, fractionmass; 
  G4String name;
  G4int ncomponents;
@@ -140,6 +168,9 @@ G4cout << *(G4Material::GetMaterialTable()) << G4endl;
 
 G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
 {
+
+
+
 
   // Clean old geometry, if any
   //
@@ -168,8 +199,83 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
                                  0,                         //its mother  volume
                                  false,                  //no boolean operation
                                  0);                        //copy number
+  ///////  Annulus
+  G4Tubs*
+  fAnnulusMother = new G4Tubs("annulusMother",                        //name
+                         0*cm, 3*cm,             //r1, r2
+                         3*cm,            //half-length 
+                         0., twopi);                      //theta1, theta2
+
+  G4Tubs*
+  fAnnulusInner = new G4Tubs("annulusInner",                        //name
+                         .25*cm, .5*cm,             //r1, r2
+                         2*cm,            //half-length 
+                         0., twopi);                      //theta1, theta2
+
+  G4Tubs*
+  fAnnulusOuter = new G4Tubs("annulusOuter",                        //name
+                         .75*cm, 1*cm,             //r1, r2
+                         2*cm,            //half-length 
+                         0., twopi);                      //theta1, theta2  
+
+  fLogicAnnulusMother = new G4LogicalVolume(fAnnulusMother,        //its solid
+                                        fTissue,   //its material
+                                        "AnnulusMother");     //its name
+
+  fLogicAnnulusOuter = new G4LogicalVolume(fAnnulusOuter,        //its solid
+                                        fBone,   //its material
+                                        "AnnulusOuter");     //its name
+
+  fLogicAnnulusInner = new G4LogicalVolume(fAnnulusInner,        //its solid
+					   fBone,   //its material
+					   "AnnulusInner");     //its name
+
+  G4RotationMatrix *rot=new G4RotationMatrix();
+  rot->rotateY(90.*deg);
   
-  //                               
+  fPhysiAnnulusMother = new G4PVPlacement(rot, G4ThreeVector(-fAnnulusPositionX,0.*cm,0.),fLogicAnnulusMother,"Annulus",fLogicWorld, false,0);                         
+
+    fPhysiAnnulusInner = new G4PVPlacement(0,                    //no rotation
+                          G4ThreeVector(0.,0.,0.),  //its position					
+                                     fLogicAnnulusInner,           //its logical volume
+                                     "AnnulusInner",         //its name
+                                     fLogicAnnulusMother,           //its mother  volume
+                                     false,              //no boolean operation
+                                     0);                    //copy number
+	
+    fPhysiAnnulusOuter = new G4PVPlacement(0,                    //no rotation
+                          G4ThreeVector(0.,0.,0.),  //its position					
+                                     fLogicAnnulusOuter,           //its logical volume
+                                     "AnnulusOuter",         //its name
+                                     fLogicAnnulusMother,           //its mother  volume
+                                     false,              //no boolean operation
+                                     0);                    //copy number	
+
+//                               
+  // Water
+  //  
+  fSolidPatient=0; fLogicPatient=0; fPhysiPatient=0;
+
+  if (fPatientThickness > 0.)  {                                             
+	G4cout<<"fPatientThickness="<<fPatientThickness<<G4endl;
+	
+     fSolidPatient = new G4Box("Patient",                //its name
+                    fPatientThickness/2,fPatientSizeY/2,fPatientSizeZ/2);//size
+                                 
+      fLogicPatient = new G4LogicalVolume(fSolidPatient,        //its solid
+                                        fWater,   //its material
+                                        "Patient");     //its name
+      /*
+      fPhysiPatient = new G4PVPlacement(0,                    //no rotation
+                          G4ThreeVector(-fPatientPositionX,fPatientY,0.),  //its position					
+                                     fLogicPatient,           //its logical volume
+                                     "Patient",         //its name
+                                     fLogicWorld,           //its mother  volume
+                                     false,              //no boolean operation
+                                     0);                    //copy number
+      */
+    }
+      //                               
   // Calorimeter
   //  
   fSolidCalor=0; fLogicCalor=0; fPhysiCalor=0;
@@ -190,7 +296,7 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
                                      fLogicWorld,           //its mother  volume
                                      false,              //no boolean operation
                                      0);                    //copy number
-  
+
   //                                 
   // Layer
   //
@@ -256,7 +362,24 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
                                         0);                   //copy number
                                         
     }
-  
+
+  fSolidShutter = new G4Box("Shutter",                //its name
+                          fShutterThickness/2,fCalorSizeY/2,fCalorSizeZ/2); 
+                          
+  fLogicShutter = new G4LogicalVolume(fSolidShutter,    //its solid
+                                            fAbsorberMaterial, //its material
+                                            fAbsorberMaterial->GetName());//name
+                                                
+
+    fPhysiShutter = new G4PVPlacement(0,                   //no rotation
+                          G4ThreeVector(-fCalorThickness/2-fShutterThickness-10.0,fShutterY,0.),  //its position
+                                        fLogicShutter,     //its logical volume
+                                        fAbsorberMaterial->GetName(), //its name
+                                        fLogicWorld,          //its mother
+                                        false,               //no boulean operat
+                                        0);                   //copy number
+                                        
+
 
   //                                 
   // Gap
@@ -329,6 +452,11 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
   //                                        
   // Visualization attributes
   //
+     G4VisAttributes* yellowThings= new G4VisAttributes(G4Colour(1.0,0.0,1.0));
+     yellowThings->SetVisibility(true);
+     G4VisAttributes* greenThings= new G4VisAttributes(G4Colour(0.0,1.0,0.0));
+     greenThings->SetVisibility(true);
+     
      fLogicWorld->SetVisAttributes (G4VisAttributes::GetInvisible());
      fLogicCalor->SetVisAttributes (G4VisAttributes::GetInvisible());
      fLogicLayer->SetVisAttributes (G4VisAttributes::GetInvisible());
@@ -336,13 +464,15 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
      //     fLogicStrip->SetVisAttributes (G4VisAttributes::GetInvisible());
      fLogicGap->SetVisAttributes (G4VisAttributes::GetInvisible());
      fLogicPcb->SetVisAttributes (G4VisAttributes::GetInvisible());
-     G4VisAttributes* simpleBoxVisAtt= new G4VisAttributes(G4Colour(1.0,0.0,1.0));
-     simpleBoxVisAtt->SetVisibility(true);
-     fLogicAbsorber->SetVisAttributes(simpleBoxVisAtt);
+
+     //     fLogicAbsorber->SetVisAttributes(yellowThings);
+     //     fLogicPatient->SetVisAttributes(yellowThings);     
+     fLogicCopper->SetVisAttributes(greenThings);
+     fLogicShutter->SetVisAttributes(greenThings);
+     fLogicAnnulusMother->SetVisAttributes(greenThings);
+     fLogicAnnulusInner->SetVisAttributes(yellowThings);
+     fLogicAnnulusOuter->SetVisAttributes(yellowThings);
      //green 0 1 0
-     G4VisAttributes* simpleStripVisAtt= new G4VisAttributes(G4Colour(0.0,1.0,0.0));
-     simpleStripVisAtt->SetVisibility(true);
-     fLogicCopper->SetVisAttributes(simpleStripVisAtt);
      //yellow 1 1 0
      //     G4VisAttributes* simpleGapVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,0.0));
      //     simpleGapVisAtt->SetVisibility(true);

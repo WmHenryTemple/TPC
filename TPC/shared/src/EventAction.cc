@@ -63,11 +63,12 @@ void EventAction::BeginOfEventAction(const G4Event* evt)
   G4int evtNb = evt->GetEventID();
   if (evtNb%fPrintModulo == 0) 
     G4cout << "\n---> Begin of event: " << evtNb << G4endl;
- 
+  //  G4cout << "How Many TImes?"<<G4endl; 
  // initialisation per event
  fEnergyAbs = fEnergyGap = 0.;
  fTrackLAbs = fTrackLGap = 0.;
  for(int i=0;i<50;i++)fGapE[i]=0;
+ for(int i=0;i<50;i++)fAbsE[i]=0; 
  for(int i=0;i<200;i++)fStripE[i]=0;
 }
 
@@ -84,8 +85,16 @@ void EventAction::EndOfEventAction(const G4Event*)
   fHistoManager->FillHisto(1, fEnergyGap);
   fHistoManager->FillHisto(2, fTrackLAbs);
   fHistoManager->FillHisto(3, fTrackLGap);
+  fHistoManager->FillHisto(19, fLastAbsEnergy);
+  //  G4cout << "Filling with: "<<fLastAbsEnergy<<G4endl;
+  
+  //  fRunAct->WritePerEvent(fStripE, 200);
+
   for(int i=0; i<50; i++)fHistoManager->FillHisto(4, i, fGapE[i]);
   for(int i=0; i<200; i++)fHistoManager->FillHisto(14, i, fStripE[i]);
+  for(int i=0; i<50; i++)fHistoManager->FillHisto(21, i, fAbsE[i]);
+  for(int i=0; i<50; i++)if(fAbsE[i]!=0)fHistoManager->FillHisto(23, i);      
+
   G4int lastStrip=-1;  
   G4int lastGap=-1;  
 
@@ -96,9 +105,19 @@ void EventAction::EndOfEventAction(const G4Event*)
   for(int i=0; i<50; i++){
     if(fGapE[i]!=0)lastGap=i+1;
   }
+
+  double energyInLastAbs=0;
+  for(int i=0; i<50; i++){
+    if(fAbsE[i]!=0){
+      energyInLastAbs=fAbsE[i];
+      //      G4cout << i <<"\t"<<energyInLastAbs<<G4endl;
+    }
+  }  
+
   
   fHistoManager->FillHisto(15, lastStrip);
   fHistoManager->FillHisto(16, lastGap);
+  fHistoManager->FillHisto(22, energyInLastAbs);  
 
     //    G4cout << "fHistoManager->FillHisto(4, i, fGapE[i]); " << i <<"  " << fGapE[i]<<G4endl;
   //fill ntuple

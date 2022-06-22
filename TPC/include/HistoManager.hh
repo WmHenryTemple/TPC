@@ -41,7 +41,7 @@ class TFile;
 class TTree;
 class TH1D;
 
-const G4int kMaxHisto = 18;
+const G4int kMaxHisto = 24;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -61,7 +61,7 @@ class HistoManager
                     G4double trackLAbs, G4double trackLGap);
     
     void PrintStatistic();
-        
+  void SetInitPos(G4double yy,G4double zz);        
   private:
     TFile*   fRootFile;
     TH1D*    fHisto[kMaxHisto];            
@@ -72,6 +72,8 @@ class HistoManager
     G4double fEgap;
     G4double fLabs;
     G4double fLgap;
+      G4double fy0;
+      G4double fz0;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

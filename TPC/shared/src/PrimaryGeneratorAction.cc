@@ -35,19 +35,21 @@
 #include "PrimaryGeneratorAction.hh"
 
 #include "DetectorConstruction.hh"
-
+#include "HistoManager.hh"
 #include "G4Event.hh"
 #include "G4ParticleGun.hh"
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4SystemOfUnits.hh"
+#include "Randomize.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* DC)
+PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* DC, HistoManager* histo)
 : G4VUserPrimaryGeneratorAction(),
   fParticleGun(0),
-  fDetector(DC)
+  fDetector(DC),
+  fHistoManager(histo)
 {
   G4int n_particle = 1;
   fParticleGun  = new G4ParticleGun(n_particle);
@@ -62,6 +64,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* DC)
   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(1.,0.,0.));
   fParticleGun->SetParticleEnergy(45.*MeV);
   G4double position = -0.5*(fDetector->GetWorldSizeX());
+
   fParticleGun->SetParticlePosition(G4ThreeVector(position,0.*cm,0.*cm));
 
 }
@@ -79,6 +82,20 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
   //this function is called at the begining of event
   // 
+  G4double size = 2.0*cm;
+
+  G4double x0= -0.5*(fDetector->GetWorldSizeX());
+  G4double z0=size;
+  G4double y0=size;  
+  //generate in square and check to see if it falls in circle
+
+  //  while((z0*z0*+y0*y0)>std::sqrt(size)){
+    //    for(G4int j=0;j<100;j++)G4cout<<"Hello"<<G4endl;
+  z0 = size * (G4UniformRand()-0.5);
+  y0 = size * (G4UniformRand()-0.5);
+  //  }
+  fHistoManager->SetInitPos(y0,z0);
+  fParticleGun->SetParticlePosition(G4ThreeVector(x0,y0,z0));
   fParticleGun->GeneratePrimaryVertex(anEvent);
 }
 

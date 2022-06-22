@@ -106,6 +106,12 @@ void HistoManager::Book()
 
   fHisto[16] = new TH1D("lastGap", "Last Gap Hit  ", 50, 0.5, 50.5);
   fHisto[17] = new TH1D("stopVolume", "Last Volume Hit  ", 4, -0.5, 3.5);
+  fHisto[18] = new TH1D("stragglingShutter", "Straggling from Shutter;MeV  ", 300, 0, 100);
+  fHisto[19] = new TH1D("eLastAbs", "Energy in Last Absorber;MeV  ", 500, 0, 15);
+  fHisto[20] = new TH1D("stragglingPatient", "Straggling  Patient; MeV  ", 600, 0, 200);
+  fHisto[21] = new TH1D("deAbs", "Energy deposited by Absorber; MeV  ", 600, 0, 200);
+  fHisto[23] = new TH1D("numAbs", "No Events by Absorber; MeV  ", 600, 0, 200);  
+  fHisto[22] = new TH1D("lastAbs", "Energy deposited in Last Absorber; MeV  ", 600, 0, 10);        
 
   
 
@@ -117,6 +123,8 @@ void HistoManager::Book()
   fNtuple1 = new TTree("Ntuple1", "Edep");
   fNtuple1->Branch("Eabs", &fEabs, "Eabs/D");
   fNtuple1->Branch("Egap", &fEgap, "Egap/D");
+  fNtuple1->Branch("y0", &fy0, "y0/D");
+  fNtuple1->Branch("z0", &fz0, "z0/D");  
 
   // create 2nd ntuple 
   fNtuple2 = new TTree("Ntuple2", "TrackL");
@@ -139,6 +147,10 @@ void HistoManager::Save()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+void HistoManager::SetInitPos( G4double yy, G4double zz){
+  fy0=yy;
+  fz0=zz;  
+}
 
 void HistoManager::FillHisto(G4int ih, G4double xbin, G4double weight)
 {
@@ -170,7 +182,7 @@ void HistoManager::FillNtuple(G4double energyAbs, G4double energyGap,
                               G4double trackLAbs , G4double trackLGap )
 {
   fEabs = energyAbs;
-  fEgap = energyGap;
+ fEgap = energyGap;
   fLabs = trackLAbs;
   fLgap = trackLGap;
 

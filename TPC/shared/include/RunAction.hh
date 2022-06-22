@@ -38,7 +38,7 @@
 
 #include "G4UserRunAction.hh"
 #include "globals.hh"
-
+#include <fstream>
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class G4Run;
@@ -53,10 +53,12 @@ public:
   virtual void BeginOfRunAction(const G4Run*);
   virtual void   EndOfRunAction(const G4Run*);
     
-  void FillPerEvent(G4double, G4double, G4double, G4double); 
+  void FillPerEvent(G4double, G4double, G4double, G4double);
+  void WritePerEvent(G4double arr[], int size); 
 
 private:
   HistoManager* fHistoManager;
+  std::ofstream outTxt;
 
   G4double fSumEAbs, fSum2EAbs;
   G4double fSumEGap, fSum2EGap;

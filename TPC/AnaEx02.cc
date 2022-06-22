@@ -75,7 +75,7 @@ int main(int argc,char** argv)
   // Set user action classes
   //
   PrimaryGeneratorAction* gen_action = 
-                          new PrimaryGeneratorAction(detector);
+    new PrimaryGeneratorAction(detector, histo);
   runManager->SetUserAction(gen_action);
   //
   RunAction* run_action = new RunAction(histo);  

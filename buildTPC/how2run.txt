@@ -1,3 +1,4 @@
 cmake -DGeant4_DIR=/site/12gev_phys/2.4/Linux_CentOS7.9.2009-gcc9.2.0/geant4/4.10.06.p02 ../TPC/
 
 make -j2 
+source ~/Physics/Programs/geant4/geant4-v11.0.1-install/bin/geant4.sh

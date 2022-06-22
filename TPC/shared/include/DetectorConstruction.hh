@@ -41,6 +41,7 @@
 
 
 class G4Box;
+class G4Tubs;
 class G4LogicalVolume;
 class G4VPhysicalVolume;
 class G4Material;
@@ -51,26 +52,26 @@ class F02ElectricFieldSetup;
 
 class DetectorConstruction : public G4VUserDetectorConstruction
 {
-  public:
+public:
   
-    DetectorConstruction();
-    virtual ~DetectorConstruction();
-
-  public:
+  DetectorConstruction();
+  virtual ~DetectorConstruction();
+  
+public:
      
-     void SetAbsorberMaterial (G4String);     
-     void SetAbsorberThickness(G4double);     
-
-     void SetGapMaterial (G4String);     
-     void SetGapThickness(G4double);
+  void SetAbsorberMaterial (G4String);     
+  void SetAbsorberThickness(G4double);
+  
+  void SetGapMaterial (G4String);     
+  void SetGapThickness(G4double);
+  
+  void SetCalorSizeY(G4double);          
+  void SetCalorSizeZ(G4double);          
+  void SetNbOfLayers (G4int);   
      
-     void SetCalorSizeY(G4double);          
-     void SetCalorSizeZ(G4double);          
-     void SetNbOfLayers (G4int);   
-     
-     virtual G4VPhysicalVolume* Construct();
+  virtual G4VPhysicalVolume* Construct();
 
-  public:
+public:
   
      void PrintCalorParameters(); 
                     
@@ -100,15 +101,25 @@ class DetectorConstruction : public G4VUserDetectorConstruction
      const G4VPhysicalVolume* GetGap1()        {return fPhysiGap1;};
      const G4VPhysicalVolume* GetGap2()        {return fPhysiGap2;};
      const G4VPhysicalVolume* GetGap3()        {return fPhysiGap3;};
+     const G4VPhysicalVolume* GetShutter()        {return fPhysiShutter;};
+     const G4VPhysicalVolume* GetPatient()        {return fPhysiPatient;};    
      const G4VPhysicalVolume* GetStrip()        {return fPhysiStrip;};
                  
-  private:
+private:
    
-     G4Material*        fAbsorberMaterial;
-     G4double           fAbsorberThickness;
+  G4Material*        fAbsorberMaterial;
+  G4double           fAbsorberThickness;
+  G4double           fShutterThickness;
 
-     G4Material*        fCopperMaterial;     
+  G4double           fPatientY;
+  G4double           fShutterY;
+  
+  G4Material*        fCopperMaterial;
+  G4Material*        fBone;
+  G4Material*        fTissue;
      G4Material*        fGapMaterial;
+     G4Material*        fWater;
+  
      G4double           fGapThickness;
      G4double           fStripSpacing;
      
@@ -119,7 +130,13 @@ class DetectorConstruction : public G4VUserDetectorConstruction
      G4double           fCalorSizeZ;
      G4double           fCalorSizeY;
      G4double           fCalorThickness;
-     
+
+     G4double           fPatientSizeZ;
+     G4double           fPatientSizeY;
+     G4double           fPatientThickness;
+     G4double           fPatientPositionX;
+       G4double           fAnnulusPositionX;    
+     G4double         fPatientShutterGap;       
      G4Material*        fDefaultMaterial;
      G4double           fWorldSizeZ;
      G4double           fWorldSizeY;
@@ -153,14 +170,34 @@ class DetectorConstruction : public G4VUserDetectorConstruction
      G4Box*             fSolidCalor;    //pointer to the solid Calor 
      G4LogicalVolume*   fLogicCalor;    //pointer to the logical Calor
      G4VPhysicalVolume* fPhysiCalor;    //pointer to the physical Calor
+
+  G4Tubs*             fAnnulusMother;    //pointer to the solid Annulus
+     G4LogicalVolume*   fLogicAnnulusMother;    //pointer to the logical Annulus
+     G4VPhysicalVolume* fPhysiAnnulusMother;    //pointer to the physical Annulus
+
+  G4Tubs*             fAnnulusOuter;    //pointer to the solid Annulus
+     G4LogicalVolume*   fLogicAnnulusOuter;    //pointer to the logical Annulus
+     G4VPhysicalVolume* fPhysiAnnulusOuter;    //pointer to the physical Annulus
+
+  G4Tubs*             fAnnulusInner;    //pointer to the solid Annulus
+     G4LogicalVolume*   fLogicAnnulusInner;    //pointer to the logical Annulus
+     G4VPhysicalVolume* fPhysiAnnulusInner;    //pointer to the physical Annulus
+
+     G4Box*             fSolidPatient;    //pointer to the solid Patient 
+     G4LogicalVolume*   fLogicPatient;    //pointer to the logical Patient
+     G4VPhysicalVolume* fPhysiPatient;    //pointer to the physical Patient  
      
      G4Box*             fSolidLayer;    //pointer to the solid Layer 
      G4LogicalVolume*   fLogicLayer;    //pointer to the logical Layer
      G4VPhysicalVolume* fPhysiLayer;    //pointer to the physical Layer
          
      G4Box*             fSolidAbsorber; //pointer to the solid Absorber
-     G4LogicalVolume*   fLogicAbsorber; //pointer to the logical Absorber
-     G4VPhysicalVolume* fPhysiAbsorber; //pointer to the physical Absorber
+  G4LogicalVolume*   fLogicAbsorber; //pointer to the logical Absorber
+  G4VPhysicalVolume* fPhysiAbsorber; //pointer to the physical Absorber
+
+  G4Box*             fSolidShutter; //pointer to the solid Shutter
+     G4LogicalVolume*   fLogicShutter; //pointer to the logical Shutter
+     G4VPhysicalVolume* fPhysiShutter; //pointer to the physical Shutter
      
 
      G4Box*             fSolidStrip;      //pointer to the solid Strip
@@ -202,9 +239,12 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 inline void DetectorConstruction::ComputeCalorParameters()
 {
   // Compute derived parameters of the calorimeter
-     fLayerThickness = fAbsorberThickness + fGapThickness;
-     fCalorThickness = fNbOfLayers*fLayerThickness;
-     
+
+
+  fLayerThickness = fAbsorberThickness + fGapThickness;
+  fCalorThickness = fNbOfLayers*fLayerThickness;
+
+  fPatientPositionX=fCalorThickness/2 + fShutterThickness + fPatientThickness/2 +   fPatientShutterGap;        
      fWorldSizeX = 10.2*fCalorThickness; 
      fWorldSizeY = 10.2*fCalorSizeY;
      fWorldSizeZ = 10.2*fCalorSizeZ;
