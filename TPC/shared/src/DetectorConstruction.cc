@@ -233,7 +233,7 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
   G4RotationMatrix *rot=new G4RotationMatrix();
   rot->rotateY(90.*deg);
   
-  fPhysiAnnulusMother = new G4PVPlacement(rot, G4ThreeVector(-fAnnulusPositionX,0.*cm,0.),fLogicAnnulusMother,"Annulus",fLogicWorld, false,0);                         
+  fPhysiAnnulusMother = new G4PVPlacement(rot, G4ThreeVector(-fAnnulusPositionX,0.*cm,0.*cm),fLogicAnnulusMother,"Annulus",fLogicWorld, false,0);                         
 
     fPhysiAnnulusInner = new G4PVPlacement(0,                    //no rotation
                           G4ThreeVector(0.,0.,0.),  //its position					
