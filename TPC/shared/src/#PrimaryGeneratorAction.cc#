@@ -62,7 +62,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* DC, HistoMa
                     = particleTable->FindParticle(particleName="proton");
   fParticleGun->SetParticleDefinition(particle);
   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(1.,0.,0.));
-  G4double eb=45*MeV;
+  G4double eb=145*MeV;
   fParticleGun->SetParticleEnergy(eb);
   G4double position = -0.5*(fDetector->GetWorldSizeX());
   fHistoManager->SetInitEbeam(eb);
@@ -98,7 +98,6 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   //  z0=0;
   //  }
   fHistoManager->SetInitPos(y0,z0);
-  fHistoManager->SetInitEbeam(fParticleGun->GetParticleEnergy());
 
   fParticleGun->SetParticlePosition(G4ThreeVector(x0,y0,z0));
   //  fParticleGun->SetParticleMomentum(G4ThreeVector(1.,0.,0.));

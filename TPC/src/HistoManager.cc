@@ -111,7 +111,8 @@ void HistoManager::Book()
   fHisto[20] = new TH1D("stragglingPatient", "Straggling  Patient; MeV  ", 600, 0, 200);
   fHisto[21] = new TH1D("deAbs", "Energy deposited by Absorber; MeV  ", 600, 0, 200);
   fHisto[23] = new TH1D("numAbs", "No Events by Absorber; MeV  ", 600, 0, 200);  
-  fHisto[22] = new TH1D("lastAbs", "Energy deposited in Last Absorber; MeV  ", 600, 0, 10);        
+  fHisto[22] = new TH1D("lastAbs", "Energy deposited in Last Absorber; MeV  ", 600, 0, 10);     fHisto[24] = new TH1D("eBeamB4Det", "Beam Energy After Annulus; MeV  ", 600, 0, 200);             
+
 
   
 
@@ -125,6 +126,7 @@ void HistoManager::Book()
   fNtuple1->Branch("Egap", &fEgap, "Egap/D");
   fNtuple1->Branch("y0", &fy0, "y0/D");
   fNtuple1->Branch("z0", &fz0, "z0/D");  
+  fNtuple1->Branch("ebeam", &feb, "eb/D");
 
   // create 2nd ntuple 
   fNtuple2 = new TTree("Ntuple2", "TrackL");
@@ -151,7 +153,11 @@ void HistoManager::SetInitPos( G4double yy, G4double zz){
   fy0=yy;
   fz0=zz;  
 }
-
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+void HistoManager::SetInitEbeam( G4double eb){
+  feb=eb;
+}
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void HistoManager::FillHisto(G4int ih, G4double xbin, G4double weight)
 {
   if (ih >= kMaxHisto) {

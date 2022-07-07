@@ -97,8 +97,13 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
   if(prim && volume!=volume2 && volume== fDetector->GetShutter()){
     //    G4cout<<"Left shutter:" <<preE<<G4endl;
     fHistoManager->FillHisto(18, postE);
-
   }
+
+  if(prim && volume2==fDetector->GetphysiWorld() && volume== fDetector->GetAnnulusMother()){
+    //    G4cout<<"Left shutter:" <<preE<<G4endl;
+    fHistoManager->FillHisto(24, postE);
+  }
+
   if(start && prim)G4cout << "Start point (y,z)" << yStart <<", "<<zStart<<G4endl;
   
   if(prim && volume!=volume2 && volume== fDetector->GetPatient()){

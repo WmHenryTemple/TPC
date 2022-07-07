@@ -113,9 +113,10 @@ DetectorConstruction::DetectorConstruction()
 
 
   // create commands for interactive definition of the calorimeter
+  G4FieldManager* fFieldMgr=new G4FieldManager();
   fDetectorMessenger = new DetectorMessenger(this);
   fEmFieldSetup = new F02ElectricFieldSetup() ;
-
+ FieldMgr->SetDetectorField(fEmFieldSetup);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -235,7 +236,7 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
   
   //  fPhysiAnnulusMother = new G4PVPlacement(rot, G4ThreeVector(-fAnnulusPositionX,0.*cm,0.*cm),fLogicAnnulusMother,"Annulus",fLogicWorld, false,0);                         
   //  fPhysiAnnulusMother = new G4PVPlacement(0, G4ThreeVector(-fAnnulusPositionX,0.*cm,0.*cm),fLogicAnnulusMother,"Annulus",fLogicWorld, false,0);                         
-  fPhysiAnnulusMother = new G4PVPlacement(rot, G4ThreeVector(-40.*cm,30.*cm,0.),fLogicAnnulusMother,"Annulus",fLogicWorld, false,0);                         
+  fPhysiAnnulusMother = new G4PVPlacement(rot, G4ThreeVector(-40.*cm,0.,0.),fLogicAnnulusMother,"Annulus",fLogicWorld, false,0);                         
   /*
     fPhysiAnnulusInner = new G4PVPlacement(0,                    //no rotation
                           G4ThreeVector(0.,0.,0.),  //its position					

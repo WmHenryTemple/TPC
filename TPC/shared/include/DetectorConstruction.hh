@@ -102,6 +102,7 @@ public:
      const G4VPhysicalVolume* GetGap2()        {return fPhysiGap2;};
      const G4VPhysicalVolume* GetGap3()        {return fPhysiGap3;};
      const G4VPhysicalVolume* GetShutter()        {return fPhysiShutter;};
+     const G4VPhysicalVolume* GetAnnulusMother()        {return fPhysiAnnulusMother;};
      const G4VPhysicalVolume* GetPatient()        {return fPhysiPatient;};    
      const G4VPhysicalVolume* GetStrip()        {return fPhysiStrip;};
                  
