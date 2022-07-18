@@ -136,7 +136,8 @@ private:
      G4double           fPatientSizeY;
      G4double           fPatientThickness;
      G4double           fPatientPositionX;
-       G4double           fAnnulusPositionX;    
+       G4double           fAnnulusPositionX;
+       G4double           fAnnulusPositionY;      
      G4double         fPatientShutterGap;       
      G4Material*        fDefaultMaterial;
      G4double           fWorldSizeZ;

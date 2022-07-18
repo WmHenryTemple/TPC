@@ -82,60 +82,67 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 
   G4double preE=prePoint->GetKineticEnergy();
   G4double postE=postPoint->GetKineticEnergy();
+  //  if(parentID==0)	G4cout <<"Energy pre, post, and post-pre"<<"\t"<<preE<<"\t"<<postE<<"\t"<<postE-preE<<G4endl;
 
-    G4double zStart=preZvec.getZ();
-    G4double yStart=preZvec.getY();
+  G4double zStart=preZvec.getZ();
+  G4double yStart=preZvec.getY();
   
-  G4double dz=abs(postZ-preZ);
+  G4double dz=abs(postZ-preZ);//z along beam line here
   G4int copyNum=0;
   G4int parentID = aStep->GetTrack()->GetParentID();
-  G4bool prim=false;
-  G4bool start=false;  
+  /////////////////////////////////////////////////////////////////////
+  G4bool prim=false;  //is primary particle?
+  G4bool start=false;  // "init" step
   if(parentID==0)prim=true;
   if(postPoint->GetProcessDefinedStep()->GetProcessName()=="initStep")start==true;
+  if(start && prim)G4cout << "Start point (y,z) z in G4 coordinates" << yStart <<", "<<zStart<<G4endl;
 
+  /////////////////////////////////////////////////////////////////////
+  /////////////////  Ebeam after shutter  /////////////////////////////
   if(prim && volume!=volume2 && volume== fDetector->GetShutter()){
     //    G4cout<<"Left shutter:" <<preE<<G4endl;
     fHistoManager->FillHisto(18, postE);
+  /////////////////////////////////////////////////////////////////////
+  /////////////////  Ebeam after patient  /////////////////////////////
   }
-
+  if(prim && volume!=volume2 && volume== fDetector->GetPatient()){
+    //    G4cout<<"Left Patient:" <<preE<<G4endl;
+    fHistoManager->FillHisto(20, postE);
+  }
+  /////////////////////////////////////////////////////////////////////
+  /////////////////  Ebeam after annulus  /////////////////////////////
   if(prim && volume2==fDetector->GetphysiWorld() && volume== fDetector->GetAnnulusMother()){
-    //    G4cout<<"Left shutter:" <<preE<<G4endl;
+    //    G4cout<<"Left Annulus:" <<preE<<G4endl;
     fHistoManager->FillHisto(24, postE);
   }
 
-  if(start && prim)G4cout << "Start point (y,z)" << yStart <<", "<<zStart<<G4endl;
   
-  if(prim && volume!=volume2 && volume== fDetector->GetPatient()){
-    //    G4cout<<"Left shutter:" <<preE<<G4endl;
-    fHistoManager->FillHisto(20, postE);
-  }
 
 
 
 
-    //  if(parentID==0)	G4cout <<"Energy pre, post, and post-pre"<<"\t"<<preE<<"\t"<<postE<<"\t"<<postE-preE<<G4endl;
 
   
 
   if (aStep->GetTrack()->GetDefinition()->GetPDGCharge() != 0.)
     stepl = aStep->GetStepLength();
   
-
+  // 
   if (volume == fDetector->GetAbsorber()){
     fEventAction->AddAbs(edep,stepl);
+    // add energy deposited in array indexed by copy number
     copyNum = aStep->GetPreStepPoint()->GetTouchable()->GetReplicaNumber(1);
-    if(parentID==0)fEventAction->absEnergy(edep, copyNum);// fills array per event
+    if(parentID==0)fEventAction->absEnergy(edep, copyNum);
     //    G4cout << edep <<"\t"<<copyNum<<G4endl;
   }
 
   G4String material= aStep -> GetTrack() -> GetMaterial() -> GetName();
-
   G4bool inGap1=(volume == fDetector->GetGap1());
   G4bool inGap2=(volume == fDetector->GetGap2());
   G4bool inGap3=(volume == fDetector->GetGap3());
   G4bool inGap=(inGap1||inGap2||inGap3);
 
+  // post E of primary particle leaving gap
   if(prim && volume!=volume2 && inGap){
     //    G4cout<<"Left shutter:" <<preE<<G4endl;
     //    G4cout << volume <<"\t"<<volume2<<"\t"<<postE<<G4endl;
@@ -144,34 +151,36 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
   
   G4Track* theTrack = aStep -> GetTrack();
 
-  // check if it is alive
+  // check if track is not alive and primary particle
   G4double volumeId=0;
   if(!(theTrack->GetTrackStatus() == fAlive)&&parentID==0){
-  //  if(postE<0.25 && parentID==0){
+    //  if(postE<0.25 && parentID==0){
     if(inGap)volumeId=1;
     else if(volume == fDetector->GetAbsorber())volumeId=2;
     else volumeId=3;
+    // Cemetary histogram
     fHistoManager->FillHisto(17, volumeId);
   }
 
+  // process = hIoni, primary particle, in Gas chamber   
   if (postPoint->GetProcessDefinedStep()->GetProcessName()=="hIoni"){
       if (inGap && parentID==0){
-
-
-
-	if(volume != volume2)G4cout << "different volumes"<<G4endl;
+	//if(volume != volume2)G4cout << "different volumes"<<G4endl;
 	copyNum = aStep->GetPreStepPoint()->GetTouchable()->GetReplicaNumber(1);
 
+	// This is wrong need new chamber size
 	G4double preGasZ=257.5 + preZ - (copyNum)*10.3-.15*2;
 	G4double postGasZ=257.5 + postZ - (copyNum)*10.3-.15*2;
 	G4double stripNumber=0.;
 	G4double stripOff=1.;
 
+	// TODO distribute energy across strips 
+	//diffusion as a function of vertical position
 	if(inGap1)stripOff=1;
 	if(inGap2)stripOff=2;
 	if(inGap3)stripOff=3;
 	stripNumber=3*copyNum+stripOff;
-
+	////////////////////////////////////////////////
 	fHistoManager->FillHisto(5, preGasZ, 1);    
 	fHistoManager->FillHisto(6, preGasZ, edep);    
 	fHistoManager->FillHisto(7, postGasZ, 1);    
@@ -185,8 +194,8 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 	fEventAction->stripEnergy(edep, stripNumber);// fills array per event
 	/////////////////////////////////////////////////
 	////////  Find what chamber the step started
-	////////  and ended.  The split up E deposited
-	////////  among strips.  Not working?!
+	////////  and ended.  Then split up E deposited
+	////////  amongst strips.  Not working?!
 	G4double start=0;
 	if(preGasZ>0. and preGasZ<=3.33)start=1; 
 	if(preGasZ>3.33 and preGasZ<=6.66)start=2; 

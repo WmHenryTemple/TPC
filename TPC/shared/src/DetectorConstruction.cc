@@ -78,9 +78,10 @@ DetectorConstruction::DetectorConstruction()
  fDetectorMessenger(0), fEmFieldSetup (0)
 {
   // default parameter values of the calorimeter
-  fAbsorberThickness = 0.3*mm;
+  fAbsorberThickness = 0.254*mm;
   fShutterThickness = 35.*mm;
   fAnnulusPositionX=40.*cm;
+  fAnnulusPositionY=16.*cm;  
   //  fPatientThickness = 120.*mm;
   fPatientThickness = 0.;  
 
@@ -93,11 +94,14 @@ DetectorConstruction::DetectorConstruction()
   fPatientSizeY = 120.*mm;
   fPatientSizeZ = 120.*mm;
   fPatientPositionX = 120.*mm;    
-  
-  fGapThickness      =  10.*mm;
-  fNbOfLayers        = 50;
+  //  fLayerThickness = fAbsorberThickness + fGapThickness;
+  //  fCalorThickness = fNbOfLayers*fLayerThickness;
+  // July 7th GEM foil is 45 x 25 cm
+  // (0.254 + GapThickness)*Nblayers=45
+  fGapThickness      =  7.246*mm;
+  fNbOfLayers        = 60;
   fCalorSizeY       = 8.*cm;
-  fCalorSizeZ       = 20.*cm;
+  fCalorSizeZ       = 25.*cm;
 
   fNbOfStrips        = 3;//166/3
   //      fCopperSizeX        = (fLayerThickness-(fNbOfStrips+1)*fCuGapSizeX-fAbsorberThickness)/fNbOfStrips;
@@ -233,10 +237,10 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
   G4RotationMatrix *rot=new G4RotationMatrix();
   rot->rotateY(90.*deg);
   
-  //  fPhysiAnnulusMother = new G4PVPlacement(rot, G4ThreeVector(-fAnnulusPositionX,0.*cm,0.*cm),fLogicAnnulusMother,"Annulus",fLogicWorld, false,0);                         
+  fPhysiAnnulusMother = new G4PVPlacement(rot, G4ThreeVector(-fAnnulusPositionX,-fAnnulusPositionY,0.*cm),fLogicAnnulusMother,"Annulus",fLogicWorld, false,0);                         
   //  fPhysiAnnulusMother = new G4PVPlacement(0, G4ThreeVector(-fAnnulusPositionX,0.*cm,0.*cm),fLogicAnnulusMother,"Annulus",fLogicWorld, false,0);                         
-  fPhysiAnnulusMother = new G4PVPlacement(rot, G4ThreeVector(-40.*cm,30.*cm,0.),fLogicAnnulusMother,"Annulus",fLogicWorld, false,0);                         
-  /*
+  //  fPhysiAnnulusMother = new G4PVPlacement(rot, G4ThreeVector(-40.*cm,30.*cm,0.),fLogicAnnulusMother,"Annulus",fLogicWorld, false,0);                         
+
     fPhysiAnnulusInner = new G4PVPlacement(0,                    //no rotation
                           G4ThreeVector(0.,0.,0.),  //its position					
                                      fLogicAnnulusInner,           //its logical volume
@@ -253,7 +257,7 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
                                      false,              //no boolean operation
                                      0);                    //copy number	
 
-  */
+
 //                               
   // Water
   //  

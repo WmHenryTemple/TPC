@@ -69,9 +69,9 @@ public:
 private:
    RunAction*    fRunAct;
    HistoManager* fHistoManager;
-   G4double fGapE[50];   
+   G4double fGapE[60];   
    G4double fStripE[200];
-   G4double fAbsE[50];     
+   G4double fAbsE[60];     
    G4double  fEnergyAbs, fEnergyGap;
    G4double  fTrackLAbs, fTrackLGap;
    G4double  fLastPos;
