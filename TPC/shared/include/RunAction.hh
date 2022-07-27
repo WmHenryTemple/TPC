@@ -54,7 +54,9 @@ public:
   virtual void   EndOfRunAction(const G4Run*);
     
   void FillPerEvent(G4double, G4double, G4double, G4double);
-  void WritePerEvent(G4double arr[], int size); 
+  void WritePerEvent(G4double arr[], int size);
+  void WritePerEvent(G4double arr[], int size, G4double arr2[]);
+  void WritePerEvent(G4double arr[], int size, G4double arr2[], G4double ebeam);     
 
 private:
   HistoManager* fHistoManager;

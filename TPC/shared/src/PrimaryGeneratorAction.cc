@@ -98,11 +98,15 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   //  z0=0;
   //  }
   fHistoManager->SetInitPos(y0,z0);
-  fHistoManager->SetInitEbeam(fParticleGun->GetParticleEnergy());
+
 
   fParticleGun->SetParticlePosition(G4ThreeVector(x0,y0,z0));
-  //  fParticleGun->SetParticleMomentum(G4ThreeVector(1.,0.,0.));
+
+  G4double eb = (30+40*(G4UniformRand()-0.5))*MeV;
+  fParticleGun->SetParticleEnergy(eb);
   fParticleGun->GeneratePrimaryVertex(anEvent);
+
+  fHistoManager->SetInitEbeam(fParticleGun->GetParticleEnergy());
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

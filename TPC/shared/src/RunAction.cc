@@ -80,6 +80,23 @@ void RunAction::WritePerEvent(G4double arr[], G4int size){
     outTxt <<i<<"\t"<< arr[i] << G4endl;    
   }
 }
+
+void RunAction::WritePerEvent(G4double arr[], G4int size, G4double arr2[]){
+
+  for(G4int i=0; i<size; i++){
+    //    G4cout <<i<<"\t"<< arr[i] <<"\t"<<arr2[i]<< G4endl;
+    outTxt <<i<<"\t"<< arr[i] <<"\t"<<arr2[i]<< G4endl;    
+  }
+}
+
+void RunAction::WritePerEvent(G4double arr[], G4int size, G4double arr2[], G4double ebeam){
+
+  for(G4int i=0; i<size; i++){
+    //    G4cout <<i<<"\t"<< arr[i] <<"\t"<<arr2[i]<< G4endl;
+    outTxt <<i<<"\t"<< ebeam <<"\t"<<arr[i] <<"\t"<<arr2[i]<< G4endl;    
+  }
+}
+
 void RunAction::FillPerEvent(G4double EAbs, G4double EGap,
                                   G4double LAbs, G4double LGap)
 {

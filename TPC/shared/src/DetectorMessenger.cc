@@ -51,6 +51,7 @@ DetectorMessenger::DetectorMessenger( DetectorConstruction* Det)
  fAbsMaterCmd(0),
  fGapMaterCmd(0),
  fAbsThickCmd(0),
+ fShutterThickCmd(0),  
  fGapThickCmd(0),
  fSizeZCmd(0),
  fSizeYCmd(0),
@@ -76,6 +77,13 @@ DetectorMessenger::DetectorMessenger( DetectorConstruction* Det)
   fAbsThickCmd->SetRange("Size>=0.");
   fAbsThickCmd->SetUnitCategory("Length");
   fAbsThickCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+
+  fShutterThickCmd = new G4UIcmdWithADoubleAndUnit("/det/setShutterThick",this);
+  fShutterThickCmd->SetGuidance("Set Thickness of the Shutter");
+  fShutterThickCmd->SetParameterName("Size",false);
+  fShutterThickCmd->SetRange("Size>=0.");
+  fShutterThickCmd->SetUnitCategory("Length");
+  fShutterThickCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
   
   fGapThickCmd = new G4UIcmdWithADoubleAndUnit("/det/setGapThick",this);
   fGapThickCmd->SetGuidance("Set Thickness of the Gap");
@@ -113,6 +121,7 @@ DetectorMessenger::~DetectorMessenger()
   delete fNbLayersCmd;
   delete fAbsMaterCmd; delete fGapMaterCmd;
   delete fAbsThickCmd; delete fGapThickCmd;
+  delete fShutterThickCmd;  
   delete fSizeZCmd;   
   delete fSizeYCmd;   
   delete fDetDir;
@@ -132,8 +141,8 @@ void DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
     fDetector
        ->SetAbsorberThickness(fAbsThickCmd->GetNewDoubleValue(newValue));
   } 
-  else if( command == fGapThickCmd ) { 
-    fDetector->SetGapThickness(fGapThickCmd->GetNewDoubleValue(newValue));
+  else if( command == fShutterThickCmd ) { 
+    fDetector->SetShutterThickness(fShutterThickCmd->GetNewDoubleValue(newValue));
   }
   else if( command == fSizeYCmd ) { 
     fDetector->SetCalorSizeY(fSizeYCmd->GetNewDoubleValue(newValue));

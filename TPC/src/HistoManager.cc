@@ -87,6 +87,9 @@ void HistoManager::Book()
   fHisto[3] = new TH1D("LGap", "trackL in gap (mm)", 100, 0., 60*CLHEP::cm);
 
   fHisto[4] = new TH1D("dedx", "Energy Deposited vs Chamber # ", 60, -0.5, 59.5);
+  fHisto[25] = new TH1D("dedx_hIoni", "Energy Deposited vs Chamber # ", 60, -0.5, 59.5);
+  fHisto[26] = new TH1D("dedx_sec", "Energy Deposited vs Chamber # ", 60, -0.5, 59.5);
+  fHisto[27] = new TH1D("dedx_prim_other", "Energy Deposited vs Chamber # ", 60, -0.5, 59.5);  
 
   //  fHisto[5] = new TH1D("dedxZ", "Energy Deposited ", 166, -257.3, 257.3)
   fHisto[5] = new TH1D("evPre", "# steps vs chamber pre-step position ", 1000, -.1, 12);
@@ -111,7 +114,8 @@ void HistoManager::Book()
   fHisto[20] = new TH1D("stragglingPatient", "Straggling  Patient; MeV  ", 600, 0, 200);
   fHisto[21] = new TH1D("deAbs", "Energy deposited by Absorber; MeV  ", 600, 0, 200);
   fHisto[23] = new TH1D("numAbs", "No Events by Absorber; MeV  ", 600, 0, 200);  
-  fHisto[22] = new TH1D("lastAbs", "Energy deposited in Last Absorber; MeV  ", 600, 0, 10);     fHisto[24] = new TH1D("eBeamB4Det", "Beam Energy After Annulus; MeV  ", 600, 0, 200);             
+  fHisto[22] = new TH1D("lastAbs", "Energy deposited in Last Absorber; MeV  ", 600, 0, 10);
+  fHisto[24] = new TH1D("eBeamB4Det", "Beam Energy After Annulus; MeV  ", 600, 0, 200);             
 
 
   
@@ -156,6 +160,10 @@ void HistoManager::SetInitPos( G4double yy, G4double zz){
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void HistoManager::SetInitEbeam( G4double eb){
   feb=eb;
+}
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+G4double HistoManager::GetEbeam(){
+  return feb;
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void HistoManager::FillHisto(G4int ih, G4double xbin, G4double weight)

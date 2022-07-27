@@ -79,13 +79,13 @@ DetectorConstruction::DetectorConstruction()
 {
   // default parameter values of the calorimeter
   fAbsorberThickness = 0.254*mm;
-  fShutterThickness = 35.*mm;
+  fShutterThickness = 5.*mm;
   fAnnulusPositionX=40.*cm;
   fAnnulusPositionY=16.*cm;  
   //  fPatientThickness = 120.*mm;
   fPatientThickness = 0.;  
 
-  fShutterY=0*cm;
+  //fShutterY=0*cm;
   fShutterY=16*cm;  
   fPatientY=0*cm;
 
@@ -157,7 +157,7 @@ man->FindOrBuildMaterial("G4_MYLAR");
  //80% Ar + 20% CO2, STP
  G4Material* Argon = man->FindOrBuildMaterial("G4_Ar");
  G4Material* CarbonDioxide = man->FindOrBuildMaterial("G4_CARBON_DIOXIDE");
-  density = 1.8223*mg/cm3 ;      
+ density = 1.8223*mg/cm3 ;      
   G4Material* Ar_80CO2_20 = new G4Material(name="ArCO2",density,ncomponents=2); 
   Ar_80CO2_20->AddMaterial( Argon,           fractionmass = 0.783 ) ;
   Ar_80CO2_20->AddMaterial( CarbonDioxide,   fractionmass = 0.217 ) ;  
@@ -549,6 +549,15 @@ void DetectorConstruction::SetAbsorberThickness(G4double val)
 {
   // change Absorber thickness and recompute the calorimeter parameters
   fAbsorberThickness = val;
+  if ( G4StateManager::GetStateManager()->GetCurrentState() != G4State_PreInit ) {
+    G4RunManager::GetRunManager()->ReinitializeGeometry();
+  }
+}
+
+void DetectorConstruction::SetShutterThickness(G4double val)
+{
+  // change Absorber thickness and recompute the calorimeter parameters
+  fShutterThickness = val;
   if ( G4StateManager::GetStateManager()->GetCurrentState() != G4State_PreInit ) {
     G4RunManager::GetRunManager()->ReinitializeGeometry();
   }

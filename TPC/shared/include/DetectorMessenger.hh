@@ -63,6 +63,7 @@ class DetectorMessenger: public G4UImessenger
     G4UIcmdWithAString*        fAbsMaterCmd;
     G4UIcmdWithAString*        fGapMaterCmd;
     G4UIcmdWithADoubleAndUnit* fAbsThickCmd;
+    G4UIcmdWithADoubleAndUnit* fShutterThickCmd;  
     G4UIcmdWithADoubleAndUnit* fGapThickCmd;
     G4UIcmdWithADoubleAndUnit* fSizeZCmd;
     G4UIcmdWithADoubleAndUnit* fSizeYCmd;

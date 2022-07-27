@@ -41,7 +41,7 @@ class TFile;
 class TTree;
 class TH1D;
 
-const G4int kMaxHisto = 25;
+const G4int kMaxHisto = 28;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -62,7 +62,8 @@ class HistoManager
     
     void PrintStatistic();
   void SetInitPos(G4double yy,G4double zz);        
-  void SetInitEbeam(G4double eb);        
+  void SetInitEbeam(G4double eb);
+  G4double GetEbeam();
   private:
     TFile*   fRootFile;
     TH1D*    fHisto[kMaxHisto];            

@@ -56,6 +56,9 @@ public:
   void AddAbs(G4double de, G4double dl) {fEnergyAbs += de; fTrackLAbs += dl;};
   void AddGap(G4double de, G4double dl) {fEnergyGap += de; fTrackLGap += dl;};
   void gapEnergy(G4double de, G4int chamber) {fGapE[chamber]+=de;};
+  void gapEnergy_hIon(G4double de, G4int chamber) {fGapE_hIon[chamber]+=de;};
+  void gapEnergy_sec(G4double de, G4int chamber) {fGapE_sec[chamber]+=de;};
+  void gapEnergy_prim_other(G4double de, G4int chamber) {fGapE_prim_other[chamber]+=de;};  
   void stripEnergy(G4double de, G4int strip) {fStripE[strip]+=de;};
 
   void absEnergy(G4double de, G4int abs) {
@@ -69,7 +72,10 @@ public:
 private:
    RunAction*    fRunAct;
    HistoManager* fHistoManager;
-   G4double fGapE[60];   
+   G4double fGapE[60];
+   G4double fGapE_sec[60];
+   G4double fGapE_hIon[60];
+   G4double fGapE_prim_other[60];     
    G4double fStripE[200];
    G4double fAbsE[60];     
    G4double  fEnergyAbs, fEnergyGap;

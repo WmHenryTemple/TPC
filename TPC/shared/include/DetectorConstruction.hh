@@ -61,6 +61,8 @@ public:
      
   void SetAbsorberMaterial (G4String);     
   void SetAbsorberThickness(G4double);
+
+  void SetShutterThickness(G4double);
   
   void SetGapMaterial (G4String);     
   void SetGapThickness(G4double);
