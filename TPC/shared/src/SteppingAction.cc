@@ -111,10 +111,13 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
   }
   /////////////////////////////////////////////////////////////////////
   /////////////////  Ebeam after annulus  /////////////////////////////
+
   if(prim && volume2==fDetector->GetphysiWorld() && volume== fDetector->GetAnnulusMother()){
     //    G4cout<<"Left Annulus:" <<preE<<G4endl;
+    fHistoManager->SetePostSamp(postE);
     fHistoManager->FillHisto(24, postE);
-  }
+ 
+ }
 
 
   if (aStep->GetTrack()->GetDefinition()->GetPDGCharge() != 0.)

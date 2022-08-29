@@ -102,7 +102,11 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
   fParticleGun->SetParticlePosition(G4ThreeVector(x0,y0,z0));
 
-  G4double eb = (30+40*(G4UniformRand()-0.5))*MeV;
+  // 70 - 110 MeV
+  G4double eb = (90+40*(G4UniformRand()-0.5))*MeV;
+
+  // 0 - 50 MeV
+  //  G4double eb = (25+50*(G4UniformRand()-0.5))*MeV;
   fParticleGun->SetParticleEnergy(eb);
   fParticleGun->GeneratePrimaryVertex(anEvent);
 

@@ -131,6 +131,8 @@ void HistoManager::Book()
   fNtuple1->Branch("y0", &fy0, "y0/D");
   fNtuple1->Branch("z0", &fz0, "z0/D");  
   fNtuple1->Branch("ebeam", &feb, "eb/D");
+  fNtuple1->Branch("lastGap", &fLastGap, "eb/D");
+  fNtuple1->Branch("ePostSamp", &fEpostSamp, "eb/D");
 
   // create 2nd ntuple 
   fNtuple2 = new TTree("Ntuple2", "TrackL");
@@ -153,6 +155,12 @@ void HistoManager::Save()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+void HistoManager::SetLastGap( G4double lastG){
+  fLastGap=lastG;
+}
+void HistoManager::SetePostSamp( G4double ePostSamp){
+  fEpostSamp=ePostSamp;
+}
 void HistoManager::SetInitPos( G4double yy, G4double zz){
   fy0=yy;
   fz0=zz;  
@@ -162,8 +170,20 @@ void HistoManager::SetInitEbeam( G4double eb){
   feb=eb;
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+G4double HistoManager::GetePostSamp(){
+  return fEpostSamp;
+}
+
 G4double HistoManager::GetEbeam(){
   return feb;
+}
+
+G4double HistoManager::GetXinit(){
+  return fz0;
+}
+
+G4double HistoManager::GetYinit(){
+  return fy0;
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void HistoManager::FillHisto(G4int ih, G4double xbin, G4double weight)
@@ -196,7 +216,7 @@ void HistoManager::FillNtuple(G4double energyAbs, G4double energyGap,
                               G4double trackLAbs , G4double trackLGap )
 {
   fEabs = energyAbs;
- fEgap = energyGap;
+  fEgap = energyGap;
   fLabs = trackLAbs;
   fLgap = trackLGap;
 

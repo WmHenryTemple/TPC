@@ -56,7 +56,7 @@ public:
   void FillPerEvent(G4double, G4double, G4double, G4double);
   void WritePerEvent(G4double arr[], int size);
   void WritePerEvent(G4double arr[], int size, G4double arr2[]);
-  void WritePerEvent(G4double arr[], int size, G4double arr2[], G4double ebeam);     
+  void WritePerEvent(G4double arr[], int size, G4double arr2[], G4double ebeam, G4double x0, G4double y0, G4double ePostSamp);     
 
 private:
   HistoManager* fHistoManager;

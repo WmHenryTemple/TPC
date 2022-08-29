@@ -69,6 +69,15 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
   //
   fHistoManager->Book(); 
   outTxt.open("ePerStrip.txt",std::ios::out);
+
+  outTxt <<"Gap#"<<"\t";
+    outTxt <<std::setw(7)<<std::setprecision(4)<<std::fixed;
+    outTxt << "Ebeam" <<"\t";
+    outTxt <<"E_post_samp" <<"\t";
+    outTxt <<"E_dep" <<"\t";
+    outTxt <<"E_dep_sec"<< "\t"; 
+    outTxt << "x0" << "\t"; 
+    outTxt << "y0" << G4endl;    
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -89,14 +98,30 @@ void RunAction::WritePerEvent(G4double arr[], G4int size, G4double arr2[]){
   }
 }
 
-void RunAction::WritePerEvent(G4double arr[], G4int size, G4double arr2[], G4double ebeam){
+void RunAction::WritePerEvent(G4double arr[], G4int size, G4double arr2[], G4double ebeam, G4double x0, G4double y0, G4double ePostSamp){
 
   for(G4int i=0; i<size; i++){
     //    G4cout <<i<<"\t"<< arr[i] <<"\t"<<arr2[i]<< G4endl;
-    outTxt <<i<<"\t"<< ebeam <<"\t"<<arr[i] <<"\t"<<arr2[i]<< G4endl;    
+    /*
+    outTxt <<std::setw(3)<<std::setprecision(6)<<std::fixed;
+    outTxt <<i<<"\t"<< ebeam <<"\t";
+    outTxt <<std::setw(6)<<std::setprecision(4)<<std::fixed<<ePostSamp <<"\t";
+    outTxt <<std::setw(6)<<std::setprecision(4)<<std::fixed<<arr[i] <<"\t";
+    outTxt <<std::setw(6)<<std::setprecision(4)<<std::fixed<<arr2[i]<< "\t"; 
+    outTxt <<std::setw(6)<<std::setprecision(4)<<std::fixed<< x0 << "\t"; 
+    outTxt <<std::setw(6)<<std::setprecision(4)<<std::fixed<< y0 << G4endl;    
+    */
+    outTxt <<i<<"\t";
+    outTxt <<std::setw(7)<<std::setprecision(3)<<std::fixed;
+    outTxt << ebeam <<"\t";
+    outTxt <<ePostSamp <<"\t";
+    outTxt <<arr[i] <<"\t";
+    outTxt <<arr2[i]<< "\t"; 
+    outTxt << x0 << "\t"; 
+    outTxt << y0 << G4endl;    
+    //    G4cout <<std::setw(9)<<std::setprecision(4)<<std::fixed;
   }
 }
-
 void RunAction::FillPerEvent(G4double EAbs, G4double EGap,
                                   G4double LAbs, G4double LGap)
 {

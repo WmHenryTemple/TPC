@@ -78,10 +78,26 @@ DetectorConstruction::DetectorConstruction()
  fDetectorMessenger(0), fEmFieldSetup (0)
 {
   // default parameter values of the calorimeter
-  fAbsorberThickness = 0.254*mm;
+
+  // Calculation in DetectorConstruction.hh
+  //  fLayerThickness = fAbsorberThickness + fGapThickness;
+  //  fCalorThickness = fNbOfLayers*fLayerThickness;
+
+  fNbOfLayers        = 60;
+  // July 27th Geo
+  //  fAbsorberThickness =  0.254*mm;
+  //  fGapThickness      =  7.246*mm;
+
+  // July 28th Test
+  fAbsorberThickness =  0.2286*mm;
+  fGapThickness      =  8.0214*mm;
+
+
+
   fShutterThickness = 5.*mm;
   fAnnulusPositionX=40.*cm;
-  fAnnulusPositionY=16.*cm;  
+  //  fAnnulusPositionY=16.*cm;  
+  fAnnulusPositionY=0.*cm;  
   //  fPatientThickness = 120.*mm;
   fPatientThickness = 0.;  
 
@@ -98,8 +114,7 @@ DetectorConstruction::DetectorConstruction()
   //  fCalorThickness = fNbOfLayers*fLayerThickness;
   // July 7th GEM foil is 45 x 25 cm
   // (0.254 + GapThickness)*Nblayers=45
-  fGapThickness      =  7.246*mm;
-  fNbOfLayers        = 60;
+
   fCalorSizeY       = 8.*cm;
   fCalorSizeZ       = 25.*cm;
 

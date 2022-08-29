@@ -63,7 +63,12 @@ class HistoManager
     void PrintStatistic();
   void SetInitPos(G4double yy,G4double zz);        
   void SetInitEbeam(G4double eb);
+  void SetLastGap(G4double lastG);
+  void SetePostSamp(G4double ePostSamp);
+  G4double GetePostSamp();
   G4double GetEbeam();
+  G4double GetYinit();
+  G4double GetXinit();
   private:
     TFile*   fRootFile;
     TH1D*    fHisto[kMaxHisto];            
@@ -74,9 +79,12 @@ class HistoManager
     G4double fEgap;
     G4double fLabs;
     G4double fLgap;
-      G4double fy0;
-      G4double fz0;
-      G4double feb;
+    G4double fLastGap;
+    G4double fEpostSamp;
+  G4double fy0;
+  G4double fz0;
+  G4double feb;
+
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

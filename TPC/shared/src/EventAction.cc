@@ -73,6 +73,8 @@ void EventAction::BeginOfEventAction(const G4Event* evt)
  for(int i=0;i<60;i++)fGapE_prim_other[i]=0; 
  for(int i=0;i<60;i++)fAbsE[i]=0; 
  for(int i=0;i<200;i++)fStripE[i]=0;
+ fHistoManager->SetePostSamp(0);
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -94,7 +96,10 @@ void EventAction::EndOfEventAction(const G4Event*)
   //  fRunAct->WritePerEvent(fStripE, 200);
   //  fRunAct->WritePerEvent(fGapE, 60);
   G4double ebeam=fHistoManager->GetEbeam();
-  fRunAct->WritePerEvent(fGapE, 60, fGapE_sec, ebeam);
+  G4double x0=fHistoManager->GetXinit();
+  G4double y0=fHistoManager->GetYinit();
+  G4double ePostSamp=fHistoManager->GetePostSamp();
+  fRunAct->WritePerEvent(fGapE, 60, fGapE_sec, ebeam, x0, y0, ePostSamp);
   for(int i=0; i<60; i++)fHistoManager->FillHisto(4, i, fGapE[i]);
   for(int i=0; i<60; i++)fHistoManager->FillHisto(25, i, fGapE_hIon[i]);
   for(int i=0; i<60; i++)fHistoManager->FillHisto(26, i, fGapE_sec[i]);
@@ -130,6 +135,7 @@ void EventAction::EndOfEventAction(const G4Event*)
     //    G4cout << "fHistoManager->FillHisto(4, i, fGapE[i]); " << i <<"  " << fGapE[i]<<G4endl;
   //fill ntuple
   //
+  fHistoManager->SetLastGap(lastGap);
   fHistoManager->FillNtuple(fEnergyAbs, fEnergyGap, fTrackLAbs, fTrackLGap);
 }  
 
