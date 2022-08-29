@@ -1,0 +1,17 @@
+#
+# Macro file for "AnaEx01.cc"
+# 
+# can be run in batch, without graphic
+# or interactively: Idle> /control/execute run.mac
+#
+/control/verbose 1
+/run/verbose 1
+/event/verbose 0
+/tracking/verbose 0
+#
+# initialize
+/run/initialize
+#
+/gun/particle proton
+#/process/inactivate msc
+/run/beamOn 100000
